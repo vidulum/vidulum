@@ -8,7 +8,18 @@ $(package)_sha256_hash_darwin=5d7a70ed4701fe9410041c1eea025c95cad97e5b3d8acc4642
 $(package)_file_name_mingw32=rust-$($(package)_version)-x86_64-pc-windows-gnu.tar.gz
 $(package)_sha256_hash_mingw32=55c07426f791c51c8a2b6934b35784175c4abb4e03f123f3e847109c4dc1ad8b
 
-ifeq ($(host_os),mingw32)
+# Mapping from GCC canonical hosts to Rust targets
+# If a mapping is not present, we assume they are identical
+$(package)_rust_target_x86_64-w64-mingw32=x86_64-pc-windows-gnu
+
+# Mapping from Rust targets to SHA-256 hashes
+$(package)_rust_std_sha256_hash_aarch64-unknown-linux-gnu=346efe3aef2aff7b71a611bf7661bcec5f9bc4025a599c2866ec5fd330247cb9
+$(package)_rust_std_sha256_hash_x86_64-pc-windows-gnu=cad5f1454d591c13eeb3657f1c9dbfeb30e648f59680bd0765b94c63e7afc49e
+
+ifneq ($(canonical_host),$(build))
+$(package)_rust_target=$(if $($(package)_rust_target_$(canonical_host)),$($(package)_rust_target_$(canonical_host)),$(canonical_host))
+$(package)_exact_file_name=rust-std-$($(package)_version)-$($(package)_rust_target).tar.gz
+$(package)_exact_sha256_hash=$($(package)_rust_std_sha256_hash_$($(package)_rust_target))
 $(package)_build_subdir=buildos
 $(package)_extra_sources = $($(package)_file_name_$(build_os))
 
