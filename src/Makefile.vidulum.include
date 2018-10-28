@@ -1,0 +1,26 @@
+noinst_PROGRAMS += \
+  vidulum/GenerateParams \
+  vidulum/CreateJoinSplit
+
+# tool for generating our public parameters
+vidulum_GenerateParams_SOURCES = vidulum/GenerateParams.cpp
+vidulum_GenerateParams_CPPFLAGS = $(AM_CPPFLAGS)
+vidulum_GenerateParams_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+vidulum_GenerateParams_LDADD = \
+  $(BOOST_LIBS) \
+  $(LIBVIDULUM) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_CRYPTO) \
+  $(LIBVIDULUM_LIBS)
+
+# tool for profiling the creation of joinsplits
+vidulum_CreateJoinSplit_SOURCES = vidulum/CreateJoinSplit.cpp
+vidulum_CreateJoinSplit_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+vidulum_CreateJoinSplit_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+vidulum_CreateJoinSplit_LDADD = \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBVIDULUM) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_CRYPTO) \
+  $(BOOST_LIBS) \
+  $(LIBVIDULUM_LIBS)

@@ -1,0 +1,21 @@
+Source: vidulum
+Section: utils
+Priority: optional
+Maintainer: Vidulum <support@vidulum.org>
+Homepage: https://vidulum.app
+Build-Depends: autoconf, automake, bsdmainutils, build-essential,
+ git, g++-multilib, libc6-dev, libtool,
+ m4, ncurses-dev, pkg-config, python,
+ unzip, wget, zlib1g-dev
+Vcs-Git: https://github.com/vidulum/vidulum.git
+Vcs-Browser: https://github.com/vidulum/vidulum
+
+Package: vidulum
+Architecture: amd64
+Depends: ${shlibs:Depends}
+Description: HTTPS for money.
+ Based on Bitcoin's code, it intends to offer a far higher standard
+ of privacy and anonymity through a sophisticiated zero-knowledge
+ proving scheme which preserves confidentiality of transaction metadata.
+ This package provides the daemon, vidulumd, and the CLI tool,
+ vidulum-cli, to interact with the daemon.
