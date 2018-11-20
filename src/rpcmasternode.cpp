@@ -323,6 +323,7 @@ UniValue listmasternodes(const UniValue& params, bool fHelp)
 
             obj.push_back(Pair("rank", (strStatus == "ENABLED" ? s.first : 0)));
             obj.push_back(Pair("network", strNetwork));
+            obj.push_back(Pair("ip", strHost));
             obj.push_back(Pair("txhash", strTxHash));
             obj.push_back(Pair("outidx", (uint64_t)oIdx));
             obj.push_back(Pair("status", strStatus));
@@ -352,6 +353,13 @@ UniValue startalias(const UniValue& params, bool fHelp)
 
             "\nExamples:\n" +
             HelpExampleCli("startalias", "\"mn1\"") + HelpExampleRpc("startalias", ""));
+    if (!masternodeSync.IsSynced())
+    {
+        UniValue obj(UniValue::VOBJ);
+        std::string error = "Masternode is not synced, please wait. Current status: " + masternodeSync.GetSyncStatus();
+        obj.push_back(Pair("result", error));
+        return obj;
+    }
 
     std::string strAlias = params[0].get_str();
     bool fSuccess = false;
@@ -371,10 +379,10 @@ UniValue startalias(const UniValue& params, bool fHelp)
     }
     if (fSuccess) {
         UniValue obj(UniValue::VOBJ);
-        obj.push_back(Pair("result", "start alias successfully"));
+        obj.push_back(Pair("result", "Successfully started alias"));
         return obj;
     } else {
-        throw runtime_error("start alias error\n");
+        throw runtime_error("Failed to start alias\n");
     }
 }
 
@@ -544,6 +552,31 @@ UniValue startmasternode (const UniValue& params, bool fHelp)
             "}\n"
             "\nExamples:\n" +
             HelpExampleCli("startmasternode", "\"alias\" \"0\" \"my_mn\"") + HelpExampleRpc("startmasternode", "\"alias\" \"0\" \"my_mn\""));
+
+    if (!masternodeSync.IsSynced())
+    {
+        UniValue resultsObj(UniValue::VARR);
+        int successful = 0;
+        int failed = 0;
+        BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+            UniValue statusObj(UniValue::VOBJ);
+            statusObj.push_back(Pair("alias", mne.getAlias()));
+            statusObj.push_back(Pair("result", "failed"));
+
+            failed++;
+            {
+                std::string error = "Masternode is not synced, please wait. Current status: " + masternodeSync.GetSyncStatus();
+                statusObj.push_back(Pair("error", error));
+            }
+            resultsObj.push_back(statusObj);
+        }
+
+        UniValue returnObj(UniValue::VOBJ);
+        returnObj.push_back(Pair("overall", strprintf("Successfully started %d masternodes, failed to start %d, total %d", successful, failed, successful + failed)));
+        returnObj.push_back(Pair("detail", resultsObj));
+
+        return returnObj;
+    }
 
     bool fLock = (params[1].get_str() == "true" ? true : false);
 
