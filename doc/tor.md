@@ -44,11 +44,11 @@ reachable from the Tor network. Add these lines to your /etc/tor/torrc (or equiv
 config file):
 
 	HiddenServiceDir /var/lib/tor/vidulum-service/
-	HiddenServicePort 16113 127.0.0.1:16113
-	HiddenServicePort 26113 127.0.0.1:26113
+	HiddenServicePort 7676 127.0.0.1:7676
+	HiddenServicePort 7677 127.0.0.1:7677
 
 The directory can be different of course, but (both) port numbers should be equal to
-your vidulumd's P2P listen port (16113 by default).
+your vidulumd's P2P listen port (7676 by default).
 
 	-externalip=X   You can tell Vidulum about its publicly reachable address using
 	                this option, and this can be a .onion address. Given the above
@@ -83,7 +83,7 @@ as well, use `discover` instead:
 
 	./vidulumd ... -discover
 
-and open port 16113 on your firewall (or use -upnp).
+and open port 7676 on your firewall (or use -upnp).
 
 If you only want to use Tor to reach onion addresses, but not use it as a proxy
 for normal IPv4/IPv6 communication, use:

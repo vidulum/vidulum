@@ -194,7 +194,7 @@ public:
         pchMessageStart[2] = 0xf9;
         pchMessageStart[3] = 0xbf;
         vAlertPubKey = ParseHex("044e7a1553392325c871c5ace5d6ad73501c66f4c185d6b0453cf45dec5a1322e705c672ac1a27ef7cdaf588c10effdf50ed5f95f85f2f54a5f6159fca394ed0c6");
-        nDefaultPort = 7676;
+        nDefaultPort = 7677;
 		nMaxTipAge = 24 * 60 * 60 * 5;
         nPruneAfterHeight = 1000;
         
