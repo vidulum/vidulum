@@ -168,9 +168,8 @@ double benchmark_solve_equihash()
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << I;
 
-    //Reinstate Equihash 200_9
-    unsigned int n = Params(CBaseChainParams::MAIN).EquihashN();
-    unsigned int k = Params(CBaseChainParams::MAIN).EquihashK();
+    unsigned int n = 192;
+    unsigned int k = 7;
     
     crypto_generichash_blake2b_state eh_state;
     EhInitialiseState(n, k, eh_state);
