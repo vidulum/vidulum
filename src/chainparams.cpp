@@ -103,8 +103,8 @@ public:
 
         eh_epoch_1 = eh200_9;
         eh_epoch_2 = eh192_7;
-        eh_epoch_1_endblock = 9999999;
-        eh_epoch_2_startblock = 9999999;
+        eh_epoch_1_endblock = 100020;
+        eh_epoch_2_startblock = 100000;
 
 
         nMasternodeCountDrift = 0;
