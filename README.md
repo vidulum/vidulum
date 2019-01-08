@@ -1,4 +1,4 @@
-Vidulum 1.0.0
+Vidulum 1.0.1
 =============
 
 What is Vidulum?
