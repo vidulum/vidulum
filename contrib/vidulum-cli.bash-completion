@@ -20,7 +20,7 @@ _vidulum_rpc() {
 # Add wallet accounts to COMPREPLY
 _vidulum_accounts() {
     local accounts
-    # Accounts are deprecated in vidulum
+    # Accounts are deprecated in Vidulum
     #accounts=$(_vidulum_rpc listaccounts | awk -F '"' '{ print $2 }')
     accounts="\\\"\\\""
     COMPREPLY=( "${COMPREPLY[@]}" $( compgen -W "$accounts" -- "$cur" ) )

@@ -220,7 +220,7 @@ def build():
         'Staging libgmp...',
         'Staging libsodium...',
         "Leaving directory '%s'" % depends_dir,
-        'config.status: creating libvidulumconsensus.pc',
+        'config.status: creating libzcashconsensus.pc',
         "Entering directory '%s'" % src_dir,
         'httpserver.cpp',
         'torcontrol.cpp',
@@ -250,8 +250,8 @@ def gen_release_notes(release):
 
 @phase('Updating debian changelog.')
 def update_debian_changelog(release):
-    os.environ['DEBEMAIL'] = 'support@Vidulum.org'
-    os.environ['DEBFULLNAME'] = 'Vidulum'
+    os.environ['DEBEMAIL'] = 'team@vidulum.org'
+    os.environ['DEBFULLNAME'] = 'Vidulum Company'
     sh_log(
         'debchange',
         '--newversion', release.debversion,

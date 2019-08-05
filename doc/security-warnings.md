@@ -4,9 +4,9 @@ Security Warnings
 Security Audit
 --------------
 
-Vidulum has not been subjected to a formal third-party security review. For security
-announcements, audit results and other general security information, email
-support@vidulum.org
+Vidulum has been subjected to a formal third-party security review. For security
+announcements, audit results and other general security information, see
+https://vidulum.org/support/security.html
 
 x86-64 Linux Only
 -----------------------
@@ -84,7 +84,7 @@ Users should also refrain from changing the default setting that only allows RPC
 Block Chain Reorganization: Major Differences
 -------------------------------------------------
 
-Users should be aware of new behavior in vidulum that differs significantly from Bitcoin: in the case of a block chain reorganization, Bitcoin's coinbase maturity rule helps to ensure that any reorganization shorter than the maturity interval will not invalidate any of the rolled-back transactions. vidulum keeps Bitcoin's 100-block maturity interval for generation transactions, but because JoinSplits must be anchored within a block, this provides more limited protection against transactions becoming invalidated. In the case of a block chain reorganization for vidulum, all JoinSplits which were anchored within the reorganization interval and any transactions that depend on them will become invalid, rolling back transactions and reverting funds to the original owner. The transaction rebroadcast mechanism inherited from Bitcoin will not successfully rebroadcast transactions depending on invalidated JoinSplits if the anchor needs to change. The creator of an invalidated JoinSplit, as well as the creators of all transactions dependent on it, must rebroadcast the transactions themselves.
+Users should be aware of new behavior in Vidulum that differs significantly from Bitcoin: in the case of a block chain reorganization, Bitcoin's coinbase maturity rule helps to ensure that any reorganization shorter than the maturity interval will not invalidate any of the rolled-back transactions. Vidulum keeps Bitcoin's 100-block maturity interval for generation transactions, but because JoinSplits must be anchored within a block, this provides more limited protection against transactions becoming invalidated. In the case of a block chain reorganization for Vidulum, all JoinSplits which were anchored within the reorganization interval and any transactions that depend on them will become invalid, rolling back transactions and reverting funds to the original owner. The transaction rebroadcast mechanism inherited from Bitcoin will not successfully rebroadcast transactions depending on invalidated JoinSplits if the anchor needs to change. The creator of an invalidated JoinSplit, as well as the creators of all transactions dependent on it, must rebroadcast the transactions themselves.
 
 Receivers of funds from a JoinSplit can mitigate the risk of relying on funds received from transactions that may be rolled back by using a higher minconf (minimum number of confirmations).
 
@@ -105,6 +105,6 @@ potential mistakes in our modifications to Bitcoin Core, it is also possible
 that there were potential changes we were supposed to make to Bitcoin Core but
 didn't, either because we didn't even consider making those changes, or we ran
 out of time. We have brainstormed and documented a variety of such possibilities
-in [issue #826](https://github.com/zcash/zcash/issues/826), and believe that we
+in [issue #826](https://github.com/vidulum/vidulum/issues/826), and believe that we
 have changed or done everything that was necessary for the 1.0.0 launch. Users
 may want to review this list themselves.

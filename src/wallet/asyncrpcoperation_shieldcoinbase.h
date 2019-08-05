@@ -1,6 +1,4 @@
-// Copyright (c) 2017 The Zcash developers
-// Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
+// Copyright (c) 2017 The Vidulum developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,8 +7,8 @@
 
 #include "asyncrpcoperation.h"
 #include "amount.h"
-#include "base58.h"
 #include "primitives/transaction.h"
+#include "transaction_builder.h"
 #include "vidulum/JoinSplit.hpp"
 #include "vidulum/Address.hpp"
 #include "wallet.h"
@@ -25,11 +23,12 @@
 // Default transaction fee if caller does not specify one.
 #define SHIELD_COINBASE_DEFAULT_MINERS_FEE   10000
 
-using namespace libvidulum;
+using namespace libzcash;
 
 struct ShieldCoinbaseUTXO {
     uint256 txid;
     int vout;
+    CScript scriptPubKey;
     CAmount amount;
 };
 
@@ -44,7 +43,13 @@ struct ShieldCoinbaseJSInfo
 
 class AsyncRPCOperation_shieldcoinbase : public AsyncRPCOperation {
 public:
-    AsyncRPCOperation_shieldcoinbase(std::vector<ShieldCoinbaseUTXO> inputs, std::string toAddress, CAmount fee = SHIELD_COINBASE_DEFAULT_MINERS_FEE, UniValue contextInfo = NullUniValue);
+    AsyncRPCOperation_shieldcoinbase(
+        TransactionBuilder builder,
+        CMutableTransaction contextualTx,
+        std::vector<ShieldCoinbaseUTXO> inputs,
+        std::string toAddress,
+        CAmount fee = SHIELD_COINBASE_DEFAULT_MINERS_FEE,
+        UniValue contextInfo = NullUniValue);
     virtual ~AsyncRPCOperation_shieldcoinbase();
 
     // We don't want to be copied or moved around
@@ -62,6 +67,7 @@ public:
     bool paymentDisclosureMode = false; // Set to true to save esk for encrypted notes in payment disclosure database.
 
 private:
+    friend class ShieldToAddress;
     friend class TEST_FRIEND_AsyncRPCOperation_shieldcoinbase;    // class for unit testing
 
     UniValue contextinfo_;     // optional data to include in return value from getStatus()
@@ -74,6 +80,7 @@ private:
 
     std::vector<ShieldCoinbaseUTXO> inputs_;
 
+    TransactionBuilder builder_;
     CTransaction tx_;
 
     bool main_impl();
@@ -89,6 +96,20 @@ private:
 
     // payment disclosure!
     std::vector<PaymentDisclosureKeyInfo> paymentDisclosureData_;
+};
+
+class ShieldToAddress : public boost::static_visitor<bool>
+{
+private:
+    AsyncRPCOperation_shieldcoinbase *m_op;
+    CAmount sendAmount;
+public:
+    ShieldToAddress(AsyncRPCOperation_shieldcoinbase *op, CAmount sendAmount) :
+        m_op(op), sendAmount(sendAmount) {}
+
+    bool operator()(const libzcash::SproutPaymentAddress &zaddr) const;
+    bool operator()(const libzcash::SaplingPaymentAddress &zaddr) const;
+    bool operator()(const libzcash::InvalidEncoding& no) const;
 };
 
 

@@ -1,7 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -66,6 +65,7 @@ public:
     void AddedBudgetItem(uint256 hash);
     void GetNextAsset();
     std::string GetSyncStatus();
+    int GetSyncValue();
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
     bool IsBudgetFinEmpty();
     bool IsBudgetPropEmpty();
@@ -77,7 +77,6 @@ public:
     bool IsMasternodeListSynced() { return RequestedMasternodeAssets > MASTERNODE_SYNC_LIST; }
     bool IsWinnersListSynced() { return RequestedMasternodeAssets > MASTERNODE_SYNC_MNW; }
     bool IsSynced() { return RequestedMasternodeAssets == MASTERNODE_SYNC_FINISHED; }
-
     void ClearFulfilledRequest();
 };
 

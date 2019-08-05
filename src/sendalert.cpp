@@ -1,6 +1,5 @@
 // Copyright (c) 2016 The Zcash developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Original code from: https://gist.github.com/laanwj/0e689cfa37b52bcbbb44
 
 /*
@@ -79,8 +78,8 @@ void ThreadSendAlert()
 
     // These versions are protocol versions
     // 170004 : 2.0.0
-    alert.nMinVer       = 170004;
-    alert.nMaxVer       = 170004;
+    alert.nMinVer       = 170008;
+    alert.nMaxVer       = 170008;
 
     //
     // main.cpp:
@@ -90,15 +89,14 @@ void ThreadSendAlert()
     //  4000 or higher will put the RPC into safe mode
     alert.nPriority     = 4000;
     alert.strComment    = "";
-    alert.strStatusBar  = "Your client is out of date and vulnerable to denial of service. Please update to the most recent version of Vidulum (2.0.0 or later). More info at: https://github.com/vidulum/vidulum/blob/master/README.md.";
+    alert.strStatusBar  = "Your client is out of date and incompatible with the Overwinter network upgrade. Please update to a recent version of Vidulum (1.2.0 or later).";
     alert.strRPCError   = alert.strStatusBar;
 
     // Set specific client version/versions here. If setSubVer is empty, no filtering on subver is done:
     // alert.setSubVer.insert(std::string("/MagicBean:0.7.2/"));
-    const std::vector<std::string> useragents = {"MagicBean", "BeanStalk", "AppleSeed"};
+    const std::vector<std::string> useragents = {}; //{"MagicBean", "BeanStalk", "AppleSeed", "EleosZcash"};
 
     BOOST_FOREACH(const std::string& useragent, useragents) {
-        alert.setSubVer.insert(std::string("/"+useragent+":1.0.10/"));
     }
 
     // Sanity check

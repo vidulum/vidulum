@@ -1,15 +1,16 @@
 // Copyright (c) 2017 The Zcash developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "paymentdisclosure.h"
+
+#include "key_io.h"
 #include "util.h"
 
 std::string PaymentDisclosureInfo::ToString() const {
     return strprintf("PaymentDisclosureInfo(version=%d, esk=%s, joinSplitPrivKey=<omitted>, address=%s)",
-        version, esk.ToString(), CZCPaymentAddress(zaddr).ToString());
+        version, esk.ToString(), EncodePaymentAddress(zaddr));
 }
 
 std::string PaymentDisclosure::ToString() const {
@@ -19,7 +20,7 @@ std::string PaymentDisclosure::ToString() const {
 
 std::string PaymentDisclosurePayload::ToString() const {
     return strprintf("PaymentDisclosurePayload(version=%d, esk=%s, txid=%s, js=%d, n=%d, address=%s, message=%s)",
-        version, esk.ToString(), txid.ToString(), js, n, CZCPaymentAddress(zaddr).ToString(), message);
+        version, esk.ToString(), txid.ToString(), js, n, EncodePaymentAddress(zaddr), message);
 }
 
 PaymentDisclosure::PaymentDisclosure(const uint256 &joinSplitPubKey, const PaymentDisclosureKey &key, const PaymentDisclosureInfo &info, const std::string &message)

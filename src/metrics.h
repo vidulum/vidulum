@@ -1,6 +1,5 @@
 // Copyright (c) 2016 The Zcash developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -65,6 +64,12 @@ void TrackMinedBlock(uint256 hash);
 
 void MarkStartTime();
 double GetLocalSolPS();
+/**
+ * Return average network hashes per second based on the last 'lookup' blocks,
+ * or over the difficulty averaging window if 'lookup' is nonpositive.
+ * If 'height' is nonnegative, compute the estimate at the time when a given block was found.
+ */
+int64_t GetNetworkHashPS(int lookup, int height);
 int EstimateNetHeightInner(int height, int64_t tipmediantime,
                            int heightLastCheckpoint, int64_t timeLastCheckpoint,
                            int64_t genesisTime, int64_t targetSpacing);

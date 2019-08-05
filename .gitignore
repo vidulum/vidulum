@@ -64,7 +64,6 @@ src/univalue/gen
 *.pb.cc
 *.pb.h
 .vscode
-.vs
 
 *.log
 *.trs
@@ -113,7 +112,7 @@ qa/pull-tester/test.*/*
 
 /doc/doxygen/
 
-libvidulumconsensus.pc
+libzcashconsensus.pc
 
 contrib/debian/files
 contrib/debian/substvars

@@ -3,6 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "key_io.h"
 #include "main.h"
 #include "crypto/equihash.h"
 
@@ -12,8 +13,6 @@
 #include <assert.h>
 
 #include <boost/assign/list_of.hpp>
-
-#include "base58.h"
 
 #include "chainparamsseeds.h"
 
@@ -46,11 +45,11 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  *
  * >>> from pyblake2 import blake2s
  * >>> 'Vidulum' + blake2s(b'10/16/2018 Vidulum is born.').hexdigest()
-*/
+ */
 
 static CBlock CreateGenesisBlock(uint32_t nTime, const uint256& nNonce, const std::vector<unsigned char>& nSolution, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "Vidulum06f1d5699f9d2543de5b94c771cf5f32449ebf848789f2bd41695a30547f7ae6";   
+    const char* pszTimestamp = "Vidulum06f1d5699f9d2543de5b94c771cf5f32449ebf848789f2bd41695a30547f7ae6";
     const CScript genesisOutputScript = CScript() << ParseHex("048491c81f5495acf2e93e5c62178db5c5f147fff8741e769227d3fa9e20cefe7458025c040c6dfbdf81b5ed61d2f4ed721afcd16fbfe11dd9ac7aad0f903534d4") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nSolution, nBits, nVersion, genesisReward);
 }
@@ -73,8 +72,9 @@ public:
     CMainParams() {
         strNetworkID = "main";
         strCurrencyUnits = "VDL";
+        bip44CoinType = 370; // As registered in https://github.com/satoshilabs/slips/blob/master/slip-0044.md
         consensus.fCoinbaseMustBeProtected = true;
-        //consensus.nSubsidySlowStartInterval = 0;
+        //consensus.nSubsidySlowStartInterval = 8000;
         //consensus.nSubsidyHalvingInterval = 60 * 24 * 365 * 4;
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
@@ -88,6 +88,24 @@ public:
         consensus.nPowMaxAdjustDown = 32; // 32% adjustment down
         consensus.nPowMaxAdjustUp = 16; // 16% adjustment up
         consensus.nPowTargetSpacing = 1 * 60; // 1 min
+        consensus.nPowAllowMinDifficultyBlocksAfterHeight = boost::none;
+        consensus.vUpgrades[Consensus::BASE_SPROUT].nProtocolVersion = 170007;
+        consensus.vUpgrades[Consensus::BASE_SPROUT].nActivationHeight =
+            Consensus::NetworkUpgrade::ALWAYS_ACTIVE;
+        consensus.vUpgrades[Consensus::UPGRADE_TESTDUMMY].nProtocolVersion = 170007;
+        consensus.vUpgrades[Consensus::UPGRADE_TESTDUMMY].nActivationHeight =
+            Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
+        consensus.vUpgrades[Consensus::UPGRADE_OVERWINTER].nProtocolVersion = 170008;
+        consensus.vUpgrades[Consensus::UPGRADE_OVERWINTER].nActivationHeight = 430000;
+        consensus.vUpgrades[Consensus::UPGRADE_SAPLING].nProtocolVersion = 170008;
+        consensus.vUpgrades[Consensus::UPGRADE_SAPLING].nActivationHeight = 430000;
+        consensus.vUpgrades[Consensus::UPGRADE_DIFA].nProtocolVersion = 170008;
+        consensus.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight = 430000;
+
+        consensus.nZawyLWMA3AveragingWindow = 60;
+        // The best chain should have at least this much work.
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000946c3a4a80d");
+        
         /**
          * The message start string should be awesome! Ⓢ❤
          */
@@ -95,17 +113,17 @@ public:
         pchMessageStart[1] = 0xad;
         pchMessageStart[2] = 0xc0;
         pchMessageStart[3] = 0x01;
-        vAlertPubKey = ParseHex("04e382452a592966a6ff09470865a86e360341fdc7bc2d0b2a218bacc6d46ec9540b90e35c9d888c95a127373d4661afb74c5d038c3248e7b5402b6a601734c3d5");
+        vAlertPubKey = ParseHex("04081b1f4f0d39e4bbb81c3fb654b0777b9ca5db9ef791e3b05c952d7b4cac2330a6e5d1cb5fcdc27124c387910dafa439e98848d3345a473c2390b33ceb234d7e");
         nDefaultPort = 7676;
         nMaxTipAge = 24 * 60 * 60;
         nPruneAfterHeight = 100000;
         newTimeRule = 246600;
-
         eh_epoch_1 = eh200_9;
         eh_epoch_2 = eh192_7;
-        eh_epoch_1_endblock = 100020;
-        eh_epoch_2_startblock = 100000;
-
+        // eh_epoch_1_endblock = 100020;
+        // eh_epoch_2_startblock = 100000;
+        eh_epoch_1_endtime = 1546742205;
+        eh_epoch_2_starttime = 1546741005;
 
         nMasternodeCountDrift = 0;
 
@@ -121,7 +139,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
 
-        //vSeeds.push_back(CDNSSeedData("dnsseed1.vidulum.org", "dnsseed1.vidulum.org")); //Vidulum seed node
+        //vSeeds.push_back(CDNSSeedData("dnsseed1.vidulum.app", "dnsseed1.vidulum.app")); //Vidulum seed node
 
         // guarantees the first 2 characters, when base58 encoded, are "v1"
         base58Prefixes[PUBKEY_ADDRESS]     = {0x1D,0xD8};
@@ -139,6 +157,11 @@ public:
         // guarantees the first 2 characters, when base58 encoded, are "SK"
         base58Prefixes[ZCSPENDING_KEY]     = {0xAB,0x36};
 
+        bech32HRPs[SAPLING_PAYMENT_ADDRESS]      = "zs";
+        bech32HRPs[SAPLING_FULL_VIEWING_KEY]     = "zviews";
+        bech32HRPs[SAPLING_INCOMING_VIEWING_KEY] = "zivks";
+        bech32HRPs[SAPLING_EXTENDED_SPEND_KEY]   = "secret-extended-key-main";
+
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
@@ -149,13 +172,18 @@ public:
 		fHeadersFirstSyncingActive = false;
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
-            (0, consensus.hashGenesisBlock),
-            1539727200,  // * UNIX timestamp of last checkpoint block
-            0,           // * total number of transactions between genesis and last checkpoint
+            (0, consensus.hashGenesisBlock)
+            (395555, uint256S("0x0035505c0e14edf996f954e8fe11a048edb62bcf98c5bd55cc6a8d79d589bb")),
+            1564843205,  // * UNIX timestamp of last checkpoint block
+            776042,      // * total number of transactions between genesis and last checkpoint
                          //   (the tx=... number in the SetBestChain debug.log lines)
-            0            //   total number of tx / (checkpoint block height / (24 * 24))
+            1130         //   total number of tx / (checkpoint block height / (24 * 24))
         };
 
+        // Vidulum Rewards System script expects a vector of 2-of-3 multisig addresses
+        vVRewardSystemAddress = {
+            "v3mYjaryMy47xwX8Hgehj8yWLtr8XBWKrFB", /* main-index: 0*/
+        };
 
         nPoolMaxTransactions = 3;
         strSporkKey = "044d7df3280836c25cbe093424bf164527e8e469aa45ff3c12460efaa3eda393b7558ba722f376f4fb9750b08027a8534e25ad5f14d29b41889ee354cfc0e026c1";
@@ -163,6 +191,9 @@ public:
         strObfuscationPoolDummyAddress = "v1XFNouBdZ6B4yZxNhR2YyzWQwn4nKNejZN";
         nStartMasternodePayments = 1539727200; //2018-10-16
         nBudget_Fee_Confirmations = 6; // Number of confirmations for the finalization fee
+        masternodeProtectionBlock = 430000;
+        masternodeCollateral = 15000;
+        assert(vVRewardSystemAddress.size() <= consensus.GetLastVRewardSystemBlockHeight());
     }
 };
 static CMainParams mainParams;
@@ -175,7 +206,9 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
         strCurrencyUnits = "VDLT";
+        bip44CoinType = 1;
         consensus.fCoinbaseMustBeProtected = true;
+        //consensus.nSubsidySlowStartInterval = 8000;
         //consensus.nSubsidyHalvingInterval = 60 * 24 * 365 * 4;
         consensus.nMajorityEnforceBlockUpgrade = 51;
         consensus.nMajorityRejectBlockOutdated = 75;
@@ -186,20 +219,39 @@ public:
         consensus.nPowMaxAdjustDown = 32; // 32% adjustment down
         consensus.nPowMaxAdjustUp = 16; // 16% adjustment up
         consensus.nPowTargetSpacing = 1 * 60;
-        consensus.nMasternodePaymentsStartBlock = 150;
+        consensus.nPowAllowMinDifficultyBlocksAfterHeight = 13000;
+        consensus.vUpgrades[Consensus::BASE_SPROUT].nProtocolVersion = 170006;
+        consensus.vUpgrades[Consensus::BASE_SPROUT].nActivationHeight =
+            Consensus::NetworkUpgrade::ALWAYS_ACTIVE;
+        consensus.vUpgrades[Consensus::UPGRADE_TESTDUMMY].nProtocolVersion = 170006;
+        consensus.vUpgrades[Consensus::UPGRADE_TESTDUMMY].nActivationHeight =
+            Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
+        consensus.vUpgrades[Consensus::UPGRADE_OVERWINTER].nProtocolVersion = 170007;
+        consensus.vUpgrades[Consensus::UPGRADE_OVERWINTER].nActivationHeight = 200;
+        consensus.vUpgrades[Consensus::UPGRADE_SAPLING].nProtocolVersion = 170008;
+        consensus.vUpgrades[Consensus::UPGRADE_SAPLING].nActivationHeight = 200;
+        consensus.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight = 210;
+        consensus.vUpgrades[Consensus::UPGRADE_DIFA].nProtocolVersion = 170008;
+        consensus.nMasternodePaymentsStartBlock = 105;
+        // consensus.nMasternodePaymentsIncreasePeriod = 200;
+        consensus.nZawyLWMA3AveragingWindow = 60;
+
+		// The best chain should have at least this much work.
+        consensus.nMinimumChainWork = uint256S("0x00");
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0x1a;
         pchMessageStart[2] = 0xf9;
         pchMessageStart[3] = 0xbf;
         vAlertPubKey = ParseHex("044e7a1553392325c871c5ace5d6ad73501c66f4c185d6b0453cf45dec5a1322e705c672ac1a27ef7cdaf588c10effdf50ed5f95f85f2f54a5f6159fca394ed0c6");
         nDefaultPort = 7677;
-		nMaxTipAge = 24 * 60 * 60 * 5;
+        nMaxTipAge = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
-        
         eh_epoch_1 = eh200_9;
         eh_epoch_2 = eh192_7;
-        eh_epoch_1_endblock = 40;
-        eh_epoch_2_startblock = 30;
+        eh_epoch_1_endtime = 1539727200;
+        eh_epoch_2_starttime = 1539727100;
+        // eh_epoch_1_endblock = 40;
+        // eh_epoch_2_startblock = 30;
 
 		
     	genesis = CreateGenesisBlock(
@@ -214,7 +266,7 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        //vSeeds.push_back(CDNSSeedData("vidulum.org", "testnet.explorer.vidulum.org"));
+        //vSeeds.push_back(CDNSSeedData("vidulum.app", "testnet.explorer.vidulum.app"));
 
         // guarantees the first 2 characters, when base58 encoded, are "tm"
         base58Prefixes[PUBKEY_ADDRESS]     = {0x1D,0x25};
@@ -232,6 +284,11 @@ public:
         // guarantees the first 2 characters, when base58 encoded, are "ST"
         base58Prefixes[ZCSPENDING_KEY]     = {0xAC,0x08};
 
+        bech32HRPs[SAPLING_PAYMENT_ADDRESS]      = "ztestsapling";
+        bech32HRPs[SAPLING_FULL_VIEWING_KEY]     = "zviewtestsapling";
+        bech32HRPs[SAPLING_INCOMING_VIEWING_KEY] = "zivktestsapling";
+        bech32HRPs[SAPLING_EXTENDED_SPEND_KEY]   = "secret-extended-key-test";
+
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
         fMiningRequiresPeers = true;
@@ -243,13 +300,22 @@ public:
 		checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
             (0, consensus.hashGenesisBlock),
-            1539727200,  // * UNIX timestamp of last checkpoint block
-            0,       // * total number of transactions between genesis and last checkpoint
-                         //   (the tx=... number in the SetBestChain debug.log lines)
-            0          //   total number of tx / (checkpoint block height / (24 * 24))
+            1539727200, // * UNIX timestamp of last checkpoint block
+            0,        // * total number of transactions between genesis and last checkpoint
+                        //   (the tx=... number in the SetBestChain debug.log lines)
+            0        // * estimated number of transactions per day after checkpoint
+                        //   total number of tx / (checkpoint block height / (60 * 24))
         };
-		
-		nStartMasternodePayments = 1520121600; //2018-03-04
+
+        // Vidulum Rewards System script expects a vector of 2-of-3 multisig addresses
+        vVRewardSystemAddress = {
+            "t274DoPuogFcsgPXr9Qt49u19VScq2ggCyz"
+            };
+        assert(vVRewardSystemAddress.size() <= consensus.GetLastVRewardSystemBlockHeight());
+
+        nStartMasternodePayments = 1539727200; //2018-10-16
+        masternodeCollateral = 150;
+        masternodeProtectionBlock = 210;
     }
 };
 static CTestNetParams testNetParams;
@@ -262,8 +328,10 @@ public:
     CRegTestParams() {
         strNetworkID = "regtest";
         strCurrencyUnits = "REG";
+        bip44CoinType = 1;
         consensus.fCoinbaseMustBeProtected = false;
-        //consensus.nSubsidyHalvingInterval = 150;
+        consensus.nSubsidySlowStartInterval = 0;
+        consensus.nSubsidyHalvingInterval = 150;
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
         consensus.nMajorityWindow = 1000;
@@ -273,20 +341,34 @@ public:
         consensus.nPowMaxAdjustDown = 0; // Turn off adjustment down
         consensus.nPowMaxAdjustUp = 0; // Turn off adjustment up
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowAllowMinDifficultyBlocksAfterHeight = 0;
+        consensus.vUpgrades[Consensus::BASE_SPROUT].nProtocolVersion = 170002;
+        consensus.vUpgrades[Consensus::BASE_SPROUT].nActivationHeight =
+            Consensus::NetworkUpgrade::ALWAYS_ACTIVE;
+        consensus.vUpgrades[Consensus::UPGRADE_TESTDUMMY].nProtocolVersion = 170002;
+        consensus.vUpgrades[Consensus::UPGRADE_TESTDUMMY].nActivationHeight =
+            Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
+        consensus.vUpgrades[Consensus::UPGRADE_OVERWINTER].nProtocolVersion = 170006;
+        consensus.vUpgrades[Consensus::UPGRADE_OVERWINTER].nActivationHeight =
+            Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
+        consensus.vUpgrades[Consensus::UPGRADE_SAPLING].nProtocolVersion = 170007;
+        consensus.vUpgrades[Consensus::UPGRADE_SAPLING].nActivationHeight =
+            Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
+
+        // The best chain should have at least this much work.
+        consensus.nMinimumChainWork = uint256S("0x00");
 
         pchMessageStart[0] = 0xaa;
         pchMessageStart[1] = 0xe8;
         pchMessageStart[2] = 0x3f;
         pchMessageStart[3] = 0x5f;
         nDefaultPort = 7678;
-        nMaxTipAge = 24 * 60 * 60 * 5;
+        nMaxTipAge = 24 * 60 * 60;
         nPruneAfterHeight = 1000;
-        
         eh_epoch_1 = eh48_5;
         eh_epoch_2 = eh48_5;
-        eh_epoch_1_endblock = 1;
-        eh_epoch_2_startblock = 1;
-
+        eh_epoch_1_endtime = 1;
+        eh_epoch_2_starttime = 1;
 
     	genesis = CreateGenesisBlock(
             1539727200,
@@ -314,11 +396,43 @@ public:
             0,
             0
         };
+        // These prefixes are the same as the testnet prefixes
+        base58Prefixes[PUBKEY_ADDRESS]     = {0x1D,0x25};
+        base58Prefixes[SCRIPT_ADDRESS]     = {0x1C,0xBA};
+        base58Prefixes[SECRET_KEY]         = {0xEF};
+        // do not rely on these BIP32 prefixes; they are not specified and may change
+        base58Prefixes[EXT_PUBLIC_KEY]     = {0x04,0x35,0x87,0xCF};
+        base58Prefixes[EXT_SECRET_KEY]     = {0x04,0x35,0x83,0x94};
+        base58Prefixes[ZCPAYMENT_ADDRRESS] = {0x16,0xB6};
+        base58Prefixes[ZCVIEWING_KEY]      = {0xA8,0xAC,0x0C};
+        base58Prefixes[ZCSPENDING_KEY]     = {0xAC,0x08};
+
+        bech32HRPs[SAPLING_PAYMENT_ADDRESS]      = "zregtestsapling";
+        bech32HRPs[SAPLING_FULL_VIEWING_KEY]     = "zviewregtestsapling";
+        bech32HRPs[SAPLING_INCOMING_VIEWING_KEY] = "zivkregtestsapling";
+        bech32HRPs[SAPLING_EXTENDED_SPEND_KEY]   = "secret-extended-key-regtest";
+
+        // Vidulum Rewards System script expects a vector of 2-of-3 multisig addresses
+        vVRewardSystemAddress = { "t274DoPuogFcsgPXr9Qt49u19VScq2ggCyz" };
+        assert(vVRewardSystemAddress.size() <= consensus.GetLastVRewardSystemBlockHeight());
+    }
+
+    void UpdateNetworkUpgradeParameters(Consensus::UpgradeIndex idx, int nActivationHeight)
+    {
+        assert(idx > Consensus::BASE_SPROUT && idx < Consensus::MAX_NETWORK_UPGRADES);
+        consensus.vUpgrades[idx].nActivationHeight = nActivationHeight;
     }
 };
 static CRegTestParams regTestParams;
 
 static CChainParams *pCurrentParams = 0;
+
+int32_t MAX_BLOCK_SIZE(int32_t height)
+{
+    if ( height >= Params().GetConsensus().vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight )
+        return(MAX_BLOCK_SIZE_AFTER_UPGRADE);
+    else return(MAX_BLOCK_SIZE_BEFORE_UPGRADE);
+}
 
 const CChainParams &Params() {
     assert(pCurrentParams);
@@ -359,19 +473,55 @@ bool SelectParamsFromCommandLine()
     return true;
 }
 
-int validEHparameterList(EHparameters *ehparams, unsigned long blockheight, const CChainParams& params){
+
+// Block height must be >0 and <=last Vidulum Rewards System block height
+// Index variable i ranges from 0 - (vVRewardSystemAddress.size()-1)
+std::string CChainParams::GetVRewardSystemAddressAtHeight(int nHeight) const {
+    // int maxHeight = consensus.GetVRewardSystemRepeatInterval();
+    // assert(nHeight > 0 && nHeight <= maxHeight);
+
+    // size_t addressChangeInterval = (maxHeight + vVRewardSystemAddress.size()) / vVRewardSystemAddress.size();
+    // size_t i = (nHeight / addressChangeInterval) % vVRewardSystemAddress.size();
+    return vVRewardSystemAddress[0];
+}
+
+// Block height must be >0 and <=last Vidulum Rewards System block height
+// The Vidulum Rewards System address is expected to be a multisig (P2SH) address
+CScript CChainParams::GetVRewardSystemScriptAtHeight(int nHeight) const {
+    assert(nHeight > 0 && nHeight <= consensus.GetLastVRewardSystemBlockHeight());
+
+    CTxDestination address = DecodeDestination(GetVRewardSystemAddressAtHeight(nHeight).c_str());
+    assert(IsValidDestination(address));
+    assert(boost::get<CScriptID>(&address) != nullptr);
+    CScriptID scriptID = boost::get<CScriptID>(address); // address is a boost variant
+    CScript script = CScript() << OP_HASH160 << ToByteVector(scriptID) << OP_EQUAL;
+    return script;
+}
+
+std::string CChainParams::GetVRewardSystemAddressAtIndex(int i) const {
+    assert(i >= 0 && i < vVRewardSystemAddress.size());
+    return vVRewardSystemAddress[i];
+}
+
+
+int validEHparameterList(EHparameters *ehparams, unsigned int blocktime, const CChainParams& params){
     //if in overlap period, there will be two valid solutions, else 1.
     //The upcoming version of EH is preferred so will always be first element
     //returns number of elements in list
-    if(blockheight>=params.eh_epoch_2_start() && blockheight>params.eh_epoch_1_end()){
+    if(blocktime>=params.eh_epoch_2_start() && blocktime>params.eh_epoch_1_end()){
         ehparams[0]=params.eh_epoch_2_params();
         return 1;
     }
-    if(blockheight<params.eh_epoch_2_start()){
+    if(blocktime<params.eh_epoch_2_start()){
         ehparams[0]=params.eh_epoch_1_params();
         return 1;
     }
     ehparams[0]=params.eh_epoch_2_params();
     ehparams[1]=params.eh_epoch_1_params();
     return 2;
+}
+
+void UpdateNetworkUpgradeParameters(Consensus::UpgradeIndex idx, int nActivationHeight)
+{
+    regTestParams.UpdateNetworkUpgradeParameters(idx, nActivationHeight);
 }

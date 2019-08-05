@@ -1,12 +1,11 @@
-// Copyright (c) 2017 The Zcash developers
+// Copyright (c) 2017 The Vidulum developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "base58.h"
-#include "rpcserver.h"
+#include "rpc/server.h"
 #include "init.h"
+#include "key_io.h"
 #include "main.h"
 #include "script/script.h"
 #include "script/standard.h"
@@ -30,7 +29,7 @@
 #include "vidulum/NoteEncryption.hpp"
 
 using namespace std;
-using namespace libvidulum;
+using namespace libzcash;
 
 // Function declaration for function implemented in wallet/rpcwallet.cpp
 bool EnsureWalletIsAvailable(bool avoidException);
@@ -43,10 +42,11 @@ UniValue z_getpaymentdisclosure(const UniValue& params, bool fHelp)
     if (!EnsureWalletIsAvailable(fHelp))
         return NullUniValue;
 
-    auto fEnablePaymentDisclosure = fExperimentalMode && GetBoolArg("-paymentdisclosure", false);
+    string enableArg = "paymentdisclosure";
+    auto fEnablePaymentDisclosure = fExperimentalMode && GetBoolArg("-" + enableArg, false);
     string strPaymentDisclosureDisabledMsg = "";
     if (!fEnablePaymentDisclosure) {
-        strPaymentDisclosureDisabledMsg = "\nWARNING: Payment disclosure is currently DISABLED. This call always fails.\n";
+        strPaymentDisclosureDisabledMsg = experimentalDisabledHelpMsg("z_getpaymentdisclosure", enableArg);
     }
 
     if (fHelp || params.size() < 3 || params.size() > 4 )
@@ -149,10 +149,11 @@ UniValue z_validatepaymentdisclosure(const UniValue& params, bool fHelp)
     if (!EnsureWalletIsAvailable(fHelp))
         return NullUniValue;
 
-    auto fEnablePaymentDisclosure = fExperimentalMode && GetBoolArg("-paymentdisclosure", false);
+    string enableArg = "paymentdisclosure";
+    auto fEnablePaymentDisclosure = fExperimentalMode && GetBoolArg("-" + enableArg, false);
     string strPaymentDisclosureDisabledMsg = "";
     if (!fEnablePaymentDisclosure) {
-        strPaymentDisclosureDisabledMsg = "\nWARNING: Payment disclosure is curretly DISABLED. This call always fails.\n";
+        strPaymentDisclosureDisabledMsg = experimentalDisabledHelpMsg("z_validatepaymentdisclosure", enableArg);
     }
 
     if (fHelp || params.size() != 1)
@@ -255,12 +256,9 @@ UniValue z_validatepaymentdisclosure(const UniValue& params, bool fHelp)
     }
    
     // Check the payment address is valid
-    PaymentAddress zaddr = pd.payload.zaddr;
-    CZCPaymentAddress address;
-    if (!address.Set(zaddr)) {
-        errs.push_back("Payment disclosure refers to an invalid payment address");        
-    } else {
-        o.push_back(Pair("paymentAddress", address.ToString()));
+    SproutPaymentAddress zaddr = pd.payload.zaddr;
+    {
+        o.push_back(Pair("paymentAddress", EncodePaymentAddress(zaddr)));
 
         try {
             // Decrypt the note to get value and memo field
@@ -276,16 +274,16 @@ UniValue z_validatepaymentdisclosure(const UniValue& params, bool fHelp)
 
             CDataStream ssPlain(SER_NETWORK, PROTOCOL_VERSION);
             ssPlain << plaintext;
-            NotePlaintext npt;
+            SproutNotePlaintext npt;
             ssPlain >> npt;
 
-            string memoHexString = HexStr(npt.memo.data(), npt.memo.data() + npt.memo.size());
+            string memoHexString = HexStr(npt.memo().data(), npt.memo().data() + npt.memo().size());
             o.push_back(Pair("memo", memoHexString));
-            o.push_back(Pair("value", ValueFromAmount(npt.value)));
+            o.push_back(Pair("value", ValueFromAmount(npt.value())));
             
             // Check the blockchain commitment matches decrypted note commitment
             uint256 cm_blockchain =  jsdesc.commitments[pd.payload.n];
-            Note note = npt.note(zaddr);
+            SproutNote note = npt.note(zaddr);
             uint256 cm_decrypted = note.cm();
             bool cm_match = (cm_decrypted == cm_blockchain);
             o.push_back(Pair("commitmentMatch", cm_match));

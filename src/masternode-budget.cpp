@@ -1,7 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,6 +8,7 @@
 #include "main.h"
 
 #include "addrman.h"
+#include "amount.h"
 #include "masternode-budget.h"
 #include "masternode-sync.h"
 #include "masternode.h"
@@ -17,6 +17,8 @@
 #include "util.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include "key_io.h"
 
 CBudgetManager budget;
 CCriticalSection cs_budget;
@@ -30,7 +32,7 @@ int nSubmittedFinalBudget;
 int GetBudgetPaymentCycleBlocks()
 {
     // Amount of blocks in a months period of time (using 1 minutes per block) = (60*24*30)
-    if (NetworkIdFromCommandLine() == CBaseChainParams::MAIN) return 43200;
+    if (NetworkIdFromCommandLine() == CBaseChainParams::MAIN) return (60*24*30); //1 month
     //for testing purposes
 
     return 144; //ten times per day
@@ -61,6 +63,7 @@ bool IsBudgetCollateralValid(uint256 nTxCollateralHash, uint256 nExpectedHash, s
         }
         if (o.scriptPubKey == findScript && o.nValue >= PROPOSAL_FEE_TX) foundOpReturn = true;
     }
+
     if (!foundOpReturn) {
         strError = strprintf("Couldn't find opReturn %s in %s", nExpectedHash.ToString(), txCollateral.ToString());
         LogPrint("masternode","CBudgetProposalBroadcast::IsBudgetCollateralValid - %s\n", strError);
@@ -520,6 +523,20 @@ void CBudgetManager::FillBlockPayee(CMutableTransaction& txNew, CAmount nFees)
     //miners get the full amount on these blocks
     txNew.vout[0].nValue = blockValue;
 
+    if (pindexPrev->nHeight + 1 >= Params().GetConsensus().vUpgrades[Consensus::UPGRADE_OVERWINTER].nActivationHeight) {
+        if ((pindexPrev->nHeight + 1 > 0) && (pindexPrev->nHeight + 1 <= Params().GetConsensus().GetLastVRewardSystemBlockHeight())) {
+            // Vidulum Rewards System
+            CAmount vVRewardSystem = blockValue * 20 / 100;
+            //vVRewardSystem = txNew.vout[0].nValue / 20;
+
+            // Take some reward away from us
+            txNew.vout[0].nValue -= vVRewardSystem;
+
+            // And give it to the Vidulum Rewards System
+            txNew.vout.push_back(CTxOut(vVRewardSystem, Params().GetVRewardSystemScriptAtHeight(pindexPrev->nHeight + 1)));
+        }
+    }
+
     if(nHighestCount > 0){
         txNew.vout[0].nValue -= nAmount;
 
@@ -527,9 +544,8 @@ void CBudgetManager::FillBlockPayee(CMutableTransaction& txNew, CAmount nFees)
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
-        CBitcoinAddress address2(address1);
 
-        LogPrintf("Masternode payment to %s\n", address2.ToString().c_str());
+        LogPrintf("Masternode payment to %s\n", EncodeDestination(address1));
     }
 }
 
@@ -1977,10 +1993,9 @@ bool CFinalizedBudget::IsTransactionValid(const CTransaction& txNew, int nBlockH
     if (!found) {
         CTxDestination address1;
         ExtractDestination(vecBudgetPayments[nCurrentBudgetPayment].payee, address1);
-        CBitcoinAddress address2(address1);
 
         LogPrint("masternode","CFinalizedBudget::IsTransactionValid - Missing required payment - %s: %d c: %d\n",
-                  address2.ToString(), vecBudgetPayments[nCurrentBudgetPayment].nAmount, nCurrentBudgetPayment);
+                  EncodeDestination(address1), vecBudgetPayments[nCurrentBudgetPayment].nAmount, nCurrentBudgetPayment);
     }
 
     return found;

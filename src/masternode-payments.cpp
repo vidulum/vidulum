@@ -1,7 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,6 +16,8 @@
 #include "utilmoneystr.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include "key_io.h"
 
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
@@ -299,8 +300,17 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
     }
 
     CAmount blockValue = GetBlockSubsidy(nHeight, Params().GetConsensus());
-    CAmount masternodePayment = GetMasternodePayment(nHeight, blockValue);
     CAmount minerValue = blockValue;
+    CAmount masternodePayment;
+    CAmount vVRewardSystem = 0;
+
+    // Vidulum Rewards System
+    if(nHeight >= Params().GetConsensus().vUpgrades[Consensus::UPGRADE_OVERWINTER].nActivationHeight)
+    {
+        vVRewardSystem = minerValue * 20 / 100;
+    }
+
+    masternodePayment = GetMasternodePayment(nHeight, blockValue);
 
     if(hasPayment){
         minerValue -= masternodePayment;
@@ -308,15 +318,23 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
     txNew.vout[0].nValue = minerValue + nFees;
 
+    if ((nHeight > 0) && (nHeight <= Params().GetConsensus().GetLastVRewardSystemBlockHeight())
+        && (nHeight >= Params().GetConsensus().vUpgrades[Consensus::UPGRADE_OVERWINTER].nActivationHeight)) {
+        // Take some reward away from us
+        txNew.vout[0].nValue -= vVRewardSystem;
+
+        // And give it to the Vidulum Rewards System
+        txNew.vout.push_back(CTxOut(vVRewardSystem, Params().GetVRewardSystemScriptAtHeight(nHeight)));
+    }
+
     //@TODO masternode
     if(hasPayment){
         txNew.vout.push_back(CTxOut(masternodePayment, payee));
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
-        CBitcoinAddress address2(address1);
 
-        LogPrint("masternode","Masternode payment to %s\n", address2.ToString().c_str());
+        LogPrint("masternode","Masternode payment to %s\n", EncodeDestination(address1));
     }
 
 }
@@ -403,9 +421,8 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
 
         CTxDestination address1;
         ExtractDestination(winner.payee, address1);
-        CBitcoinAddress address2(address1);
 
-        //   LogPrint("mnpayments", "mnw - winning vote - Addr %s Height %d bestHeight %d - %s\n", address2.ToString().c_str(), winner.nBlockHeight, nHeight, winner.vinMasternode.prevout.ToStringShort());
+        //   LogPrint("mnpayments", "mnw - winning vote - Addr %s Height %d bestHeight %d - %s\n", EncodeDestination(address1), winner.nBlockHeight, nHeight, winner.vinMasternode.prevout.ToStringShort());
 
         if (masternodePayments.AddWinningMasternode(winner)) {
             winner.Relay();
@@ -555,12 +572,11 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 		try {
 			CTxDestination address1;
 			ExtractDestination(payee.scriptPubKey, address1);
-			CBitcoinAddress address2(address1);
 
 			if (strPayeesPossible == "") {
-				strPayeesPossible += address2.ToString();
+				strPayeesPossible += EncodeDestination(address1);
 			} else {
-				strPayeesPossible += "," + address2.ToString();
+				strPayeesPossible += "," + EncodeDestination(address1);
 			}
         } catch (...) { }
     }
@@ -578,12 +594,11 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString()
     BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
         CTxDestination address1;
         ExtractDestination(payee.scriptPubKey, address1);
-        CBitcoinAddress address2(address1);
 
         if (ret != "Unknown") {
-            ret += ", " + address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.nVotes);
+            ret += ", " + EncodeDestination(address1) + ":" + boost::lexical_cast<std::string>(payee.nVotes);
         } else {
-            ret = address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.nVotes);
+            ret = EncodeDestination(address1) + ":" + boost::lexical_cast<std::string>(payee.nVotes);
         }
     }
 
@@ -717,9 +732,8 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
 
             CTxDestination address1;
             ExtractDestination(payee, address1);
-            CBitcoinAddress address2(address1);
 
-            LogPrint("masternode","CMasternodePayments::ProcessBlock() Winner payee %s nHeight %d. \n", address2.ToString().c_str(), newWinner.nBlockHeight);
+            LogPrint("masternode","CMasternodePayments::ProcessBlock() Winner payee %s nHeight %d. \n", EncodeDestination(address1), newWinner.nBlockHeight);
         } else {
             LogPrint("masternode","CMasternodePayments::ProcessBlock() Failed to find masternode to pay\n");
         }

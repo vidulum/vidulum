@@ -1,6 +1,5 @@
 // Copyright (c) 2016 The Zcash developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +9,7 @@
 
 #include <libsnark/common/profiling.hpp>
 
-using namespace libvidulum;
+using namespace libzcash;
 
 int main(int argc, char **argv)
 {

@@ -32,7 +32,7 @@ To create a backup of your wallet, use:
 
 The backup will be an exact copy of the current state of your wallet.dat file stored in the export directory you specified in the config file. The file path will also be returned.
 
-If you generate a new vidulum address, it will not be reflected in the backup file.
+If you generate a new Vidulum address, it will not be reflected in the backup file.
 
 If your original `wallet.dat` file becomes inaccessible for whatever reason, you can use your backup by copying it into your data directory and renaming the copy to `wallet.dat`.
 

@@ -1,6 +1,5 @@
 // Copyright (c) 2016 The Zcash developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -73,23 +72,21 @@ double AtomicTimer::rate(const AtomicCounter& count)
     return duration > 0 ? (double)count.get() / duration : 0;
 }
 
-CCriticalSection cs_metrics;
+static CCriticalSection cs_metrics;
 
-boost::synchronized_value<int64_t> nNodeStartTime;
-boost::synchronized_value<int64_t> nNextRefresh;
+static boost::synchronized_value<int64_t> nNodeStartTime;
+static boost::synchronized_value<int64_t> nNextRefresh;
 AtomicCounter transactionsValidated;
 AtomicCounter ehSolverRuns;
 AtomicCounter solutionTargetChecks;
-AtomicCounter minedBlocks;
+static AtomicCounter minedBlocks;
 AtomicTimer miningTimer;
 
-boost::synchronized_value<std::list<uint256>> trackedBlocks;
+static boost::synchronized_value<std::list<uint256>> trackedBlocks;
 
-boost::synchronized_value<std::list<std::string>> messageBox;
-boost::synchronized_value<std::string> initMessage;
-bool loaded = false;
-
-extern int64_t GetNetworkHashPS(int lookup, int height);
+static boost::synchronized_value<std::list<std::string>> messageBox;
+static boost::synchronized_value<std::string> initMessage;
+static bool loaded = false;
 
 void TrackMinedBlock(uint256 hash)
 {
@@ -336,6 +333,11 @@ int printMetrics(size_t cols, bool mining)
                         chainActive.Contains(mapBlockIndex[hash])) {
                     int height = mapBlockIndex[hash]->nHeight;
                     CAmount subsidy = GetBlockSubsidy(height, consensusParams);
+                    if ((height > 0) && (height < consensusParams.GetLastVRewardSystemBlockHeight())
+                        && (height >= consensusParams.vUpgrades[Consensus::UPGRADE_OVERWINTER].nActivationHeight)) {
+
+                        subsidy -= subsidy * 20 / 100;
+                    }
                     if (std::max(0, COINBASE_MATURITY - (tipHeight - height)) > 0) {
                         immature += subsidy;
                     } else {
@@ -416,6 +418,30 @@ int printInitMessage()
     return 2;
 }
 
+#ifdef WIN32
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+
+bool enableVTMode()
+{
+    // Set output mode to handle virtual terminal sequences
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode)) {
+        return false;
+    }
+
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!SetConsoleMode(hOut, dwMode)) {
+        return false;
+    }
+    return true;
+}
+#endif
+
 void ThreadShowMetricsScreen()
 {
     // Make this thread recognisable as the metrics screen thread
@@ -427,6 +453,10 @@ void ThreadShowMetricsScreen()
     int64_t nRefresh = GetArg("-metricsrefreshtime", isTTY ? 1 : 600);
 
     if (isScreen) {
+#ifdef WIN32
+        enableVTMode();
+#endif
+
         // Clear screen
         std::cout << "\e[2J";
 
@@ -451,10 +481,11 @@ void ThreadShowMetricsScreen()
         // Get current window size
         if (isTTY) {
 #ifdef WIN32
- 	        CONSOLE_SCREEN_BUFFER_INFO csbi;
- 	        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-            cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
- 	        cols = 80;
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) != 0) {
+                cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+            }
+			cols = 80;
 #else
 
             struct winsize w;

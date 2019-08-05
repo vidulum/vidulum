@@ -5,7 +5,7 @@ connections, inter-process communication, and shared-memory,
 providing various message-oriented semantics such as publish/subcribe,
 request/reply, and push/pull.
 
-The vidulum daemon can be configured to act as a trusted "border
+The Vidulum daemon can be configured to act as a trusted "border
 router", implementing the vidulum wire protocol and relay, making
 consensus decisions, maintaining the local blockchain database,
 broadcasting locally generated transactions into the network, and
@@ -103,5 +103,5 @@ retrieve the chain from the last known block to the new tip.
 
 There are several possibilities that ZMQ notification can get lost
 during transmission depending on the communication type your are
-using. vidulumd appends an up-counting sequence number to each
+using. Vidulumd appends an up-counting sequence number to each
 notification which allows listeners to detect lost notifications.

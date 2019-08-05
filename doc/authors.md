@@ -1,4 +1,4 @@
-Vidulum Contributors
+Snowgem Contributors
 ==================
 
 Jack Grigg (514)

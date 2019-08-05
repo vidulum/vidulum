@@ -1,4 +1,4 @@
-*** Warning: This document has not been updated for vidulum and may be inaccurate. ***
+*** Warning: This document has not been updated for Vidulum and may be inaccurate. ***
 
 Translation Strings Policy
 ===========================

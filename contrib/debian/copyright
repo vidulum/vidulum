@@ -1,10 +1,10 @@
 Format: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?rev=174
 Upstream-Name: Vidulum
-Upstream-Contact: Vidulum <support@vidulum.org>
+Upstream-Contact: Vidulum Company <team@vidulum.org>
 Source: https://github.com/vidulum/vidulum
 
 Files: *
-Copyright: 2018 The Vidulum developers
+Copyright: 2018-2019 The Vidulum developers
 Copyright: 2017 The SnowGem developers
 Copyright: 2016-2017, The Zcash developers
  2009-2017, Bitcoin Core developers

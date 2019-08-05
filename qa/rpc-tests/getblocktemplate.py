@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 # Copyright (c) 2016 The Zcash developers
 # Copyright (c) 2017-2018 The SnowGem developers
-# Copyright (c) 2018 The Vidulum developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -54,7 +53,7 @@ class GetBlockTemplateTest(BitcoinTestFramework):
         assert(len(tmpl['noncerange']) == 16)
 
         # Test 6: coinbasetxn checks
-        assert('foundersreward' in tmpl['coinbasetxn'])
+        assert('vrewardsystem' in tmpl['coinbasetxn'])
         assert(tmpl['coinbasetxn']['required'])
 
 if __name__ == '__main__':

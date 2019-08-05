@@ -1,7 +1,6 @@
 // Equihash solver
 // Copyright (c) 2016-2016 John Tromp, The Zcash developers
 // Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
 
 #include "sodium.h"
 #ifdef __APPLE__

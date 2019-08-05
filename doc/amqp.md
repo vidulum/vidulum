@@ -105,7 +105,7 @@ No authentication or authorization is done on peers that vidulumd connects
 to; it is assumed that the AMQP link is exposed only to trusted entities,
 using other means such as firewalling.
 
-TLS support may be added once OpenSSL has been removed from the vidulum
+TLS support may be added once OpenSSL has been removed from the Vidulum
 project and alternative TLS implementations have been evaluated.
 
 SASL support may be added in a future update for secure communication.

@@ -37,7 +37,6 @@ static const EHparameters eh96_5 = {96,5,68};
 static const EHparameters eh48_5 = {48,5,36};
 static const unsigned int MAX_EH_PARAM_LIST_LEN = 2;
 
-
 typedef std::map<int, uint256> MapCheckpoints;
 
 struct CCheckpointData {
@@ -71,6 +70,15 @@ public:
         MAX_BASE58_TYPES
     };
 
+    enum Bech32Type {
+        SAPLING_PAYMENT_ADDRESS,
+        SAPLING_FULL_VIEWING_KEY,
+        SAPLING_INCOMING_VIEWING_KEY,
+        SAPLING_EXTENDED_SPEND_KEY,
+
+        MAX_BECH32_TYPES
+    };
+
     const Consensus::Params& GetConsensus() const { return consensus; }
     const CMessageHeader::MessageStartChars& MessageStart() const { return pchMessageStart; }
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
@@ -90,12 +98,13 @@ public:
 
     EHparameters eh_epoch_1_params() const { return eh_epoch_1; }
     EHparameters eh_epoch_2_params() const { return eh_epoch_2; }
-    unsigned long eh_epoch_1_end() const { return eh_epoch_1_endblock; }
-    unsigned long eh_epoch_2_start() const { return eh_epoch_2_startblock; }
+    unsigned int eh_epoch_1_end() const { return eh_epoch_1_endtime; }
+    unsigned int eh_epoch_2_start() const { return eh_epoch_2_starttime; }
 
     /** The masternode count that we will allow the see-saw reward payments to be off by */
     int MasternodeCountDrift() const { return nMasternodeCountDrift; }
     std::string CurrencyUnits() const { return strCurrencyUnits; }
+    uint32_t BIP44CoinType() const { return bip44CoinType; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
     /** In the future use NetworkIDString() for RPC fields */
@@ -104,19 +113,25 @@ public:
     std::string NetworkIDString() const { return strNetworkID; }
     const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
+    const std::string& Bech32HRP(Bech32Type type) const { return bech32HRPs[type]; }
     const std::vector<SeedSpec6>& FixedSeeds() const { return vFixedSeeds; }
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
-
+    /** Return the Vidulum Rewards System address and script for a given block height */
     std::string SporkKey() const { return strSporkKey; }
     std::string ObfuscationPoolDummyAddress() const { return strObfuscationPoolDummyAddress; }
     /** Headers first syncing is disabled */
     bool HeadersFirstSyncingActive() const { return fHeadersFirstSyncingActive; };
     int64_t StartMasternodePayments() const { return nStartMasternodePayments; }
     int64_t Budget_Fee_Confirmations() const { return nBudget_Fee_Confirmations; }
+    std::string GetVRewardSystemAddressAtHeight(int height) const;
+    CScript GetVRewardSystemScriptAtHeight(int height) const;
+    std::string GetVRewardSystemAddressAtIndex(int i) const;
     /** Enforce coinbase consensus rule in regtest mode */
     void SetRegTestCoinbaseMustBeProtected() { consensus.fCoinbaseMustBeProtected = true; }
     int GetNewTimeRule() const { return newTimeRule; }
+    int GetMasternodeProtectionBlock() const { return masternodeProtectionBlock; }
+    int GetMasternodeCollateral() const { return masternodeCollateral; }
 protected:
     CChainParams() {}
 
@@ -128,16 +143,17 @@ protected:
     int nDefaultPort = 0;
     long nMaxTipAge = 0;
     uint64_t nPruneAfterHeight = 0;
-
-    EHparameters eh_epoch_1 = eh192_7;
-    EHparameters eh_epoch_2 = eh200_9;
-    unsigned long eh_epoch_1_endblock = 150000;
-    unsigned long eh_epoch_2_startblock = 140000;
+    EHparameters eh_epoch_1 = eh200_9;
+    EHparameters eh_epoch_2 = eh192_7;
+    unsigned int eh_epoch_1_endtime = 150000; //it's time, not height
+    unsigned int eh_epoch_2_starttime = 140000; //it's time, not height
 
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
+    std::string bech32HRPs[MAX_BECH32_TYPES];
     std::string strNetworkID;
     std::string strCurrencyUnits;
+    uint32_t bip44CoinType;
     CBlock genesis;
     std::vector<SeedSpec6> vFixedSeeds;
     bool fMiningRequiresPeers = false;
@@ -153,7 +169,10 @@ protected:
     int64_t nStartMasternodePayments;
     int64_t nBudget_Fee_Confirmations;
     CCheckpointData checkpointData;
+    std::vector<std::string> vVRewardSystemAddress;
     int newTimeRule;
+    int masternodeProtectionBlock;
+    int masternodeCollateral;
 };
 
 /**
@@ -174,7 +193,10 @@ void SelectParams(CBaseChainParams::Network network);
  */
 bool SelectParamsFromCommandLine();
 
-int validEHparameterList(EHparameters *ehparams, unsigned long blockheight, const CChainParams& params);
+int validEHparameterList(EHparameters *ehparams, unsigned int blocktime, const CChainParams& params);
 
-
+/**
+ * Allows modifying the network upgrade regtest parameters.
+ */
+void UpdateNetworkUpgradeParameters(Consensus::UpgradeIndex idx, int nActivationHeight);
 #endif // BITCOIN_CHAINPARAMS_H

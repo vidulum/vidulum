@@ -1,7 +1,7 @@
 Source: vidulum
 Section: utils
 Priority: optional
-Maintainer: Vidulum <support@vidulum.org>
+Maintainer: Vidulum LLC Company <contact@vidulum.org>
 Homepage: https://vidulum.app
 Build-Depends: autoconf, automake, bsdmainutils, build-essential,
  git, g++-multilib, libc6-dev, libtool,

@@ -11,7 +11,7 @@
   vars_prompt:
     - name: "buildbot_worker_admin"
       prompt: "Admin details"
-      default: "Vidulum <support@vidulum.org>"
+      default: "Vidulum <sysadmin@vidulum.org>"
     - name: "buildbot_worker_name"
       prompt: "Buildbot worker name (provided by SNGC)"
       private: no

@@ -1,4 +1,4 @@
-*** Warning: Do not assume Tor support does the correct thing in vidulum; better Tor support is a future feature goal. ***
+*** Warning: Do not assume Tor support does the correct thing in Vidulum; better Tor support is a future feature goal. ***
 
 TOR SUPPORT IN VIDULUM
 ====================
@@ -96,15 +96,15 @@ for normal IPv4/IPv6 communication, use:
 
 Starting with Tor version 0.2.7.1 it is possible, through Tor's control socket
 API, to create and destroy 'ephemeral' hidden services programmatically.
-vidulum has been updated to make use of this.
+Vidulum has been updated to make use of this.
 
 This means that if Tor is running (and proper authentication has been configured),
-vidulum automatically creates a hidden service to listen on. vidulum will also use Tor
+Vidulum automatically creates a hidden service to listen on. Vidulum will also use Tor
 automatically to connect to other .onion nodes if the control socket can be
 successfully opened. This will positively affect the number of available .onion
 nodes and their usage.
 
-This new feature is enabled by default if vidulum is listening (`-listen`), and
+This new feature is enabled by default if Vidulum is listening (`-listen`), and
 requires a Tor connection to work. It can be explicitly disabled with `-listenonion=0`
 and, if not disabled, configured using the `-torcontrol` and `-torpassword` settings.
 To show verbose debugging information, pass `-debug=tor`.
@@ -121,11 +121,11 @@ of the `-torpassword` flag and a `hash-password` which can be enabled and specif
 Tor configuration.
 
 
-4. Connect to a vidulum hidden server
+4. Connect to a Vidulum hidden server
 -----------------------------------
 
 To test your set-up, you might want to try connecting via Tor on a different computer to just a
-a single vidulum hidden server. Launch vidulumd as follows:
+a single Vidulum hidden server. Launch vidulumd as follows:
 
 	./vidulumd -onion=127.0.0.1:9050 -connect=zctestseie6wxgio.onion
 
@@ -136,7 +136,7 @@ Now use vidulum-cli to verify there is only a single peer connection.
 	[
 	    {
 	        "id" : 1,
-	        "addr" : "zctestseie6wxgio.onion:26113",
+	        "addr" : "zctestseie6wxgio.onion:7677",
 	        ...
 	        "version" : 170002,
 	        "subver" : "/MagicBean:1.0.0/",

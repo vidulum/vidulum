@@ -16,11 +16,11 @@ is a common reason.)
 
 Check that dependencies are properly hosted by looking at the `check-depends` builder:
 
-  EXAMPLE:: https://ci.example.org/#/builders/1
+  https://ci.vidulum.org/#/builders/1
 
 Check that there are no surprising performance regressions:
 
-  EXAMPLE:: https://speed.example.org
+  https://speed.vidulum.org
 
 Ensure that new performance metrics appear on that site.
 
@@ -103,10 +103,10 @@ signed. **CAUTION:** Remember the `v` at the beginning here:
 
 ## Make and deploy deterministic builds
 
-- Run the [Gitian deterministic build environment](https://github.com/example/example-gitian)
-- Compare the uploaded [build manifests on gitian.sigs](https://github.com/example/gitian.sigs)
+- Run the [Gitian deterministic build environment](https://github.com/vidulum/vidulum-gitian)
+- Compare the uploaded [build manifests on gitian.sigs](https://github.com/vidulum/gitian.sigs)
 - If all is well, the DevOps engineer will build the Debian packages and update the
-  [apt.example.org package repository](https://apt.example.org).
+  [apt.vidulum.org package repository](https://apt.vidulum.org).
 
 ## Add release notes to GitHub
 
@@ -128,10 +128,10 @@ the marking to see what GitHub wants to be done.
 
 ### Deploy testnet
 
-Notify the vidulum DevOps engineer/sysadmin that the release has been tagged. They update some variables in the company's automation code and then run an Ansible playbook, which:
+Notify the Vidulum DevOps engineer/sysadmin that the release has been tagged. They update some variables in the company's automation code and then run an Ansible playbook, which:
 
-* builds vidulum based on the specified branch
-* deploys it as a public service (e.g. betatestnet.example.org, mainnet.example.org)
+* builds Vidulum based on the specified branch
+* deploys it as a public service (e.g. betatestnet.vidulum.org, mainnet.vidulum.org)
 * often the same server can be re-used, and the role idempotently handles upgrades, but if not then they also need to update DNS records
 * possible manual steps: blowing away the `testnet3` dir, deleting old parameters, restarting DNS seeder
 

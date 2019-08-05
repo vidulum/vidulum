@@ -1,7 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2018 The SnowGem developers
-// Copyright (c) 2018 The Vidulum developers
+// Copyright (c) 2017-2019 The SnowGem developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -124,6 +123,11 @@ void CMasternodeSync::GetNextAsset()
     }
     RequestedMasternodeAttempt = 0;
     nAssetSyncStarted = GetTime();
+}
+
+int CMasternodeSync::GetSyncValue()
+{
+    return RequestedMasternodeAssets;
 }
 
 std::string CMasternodeSync::GetSyncStatus()
@@ -268,7 +272,7 @@ void CMasternodeSync::Process()
 
         if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
             if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST) {
-                if (lastMasternodeList > 0 && lastMasternodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
+                if (lastMasternodeList >= 0 && lastMasternodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
                     return;
                 }
@@ -347,6 +351,11 @@ void CMasternodeSync::Process()
                     // Try to activate our masternode if possible
                     activeMasternode.ManageStatus();
 
+                    //masternode protection code
+                    if(GetBoolArg("-masternodeconnections", false))
+                    {
+                        DisconnectNodes();
+                    }
                     return;
                 }
 
@@ -356,6 +365,12 @@ void CMasternodeSync::Process()
                     // maybe there is no budgets at all, so just finish syncing
                     GetNextAsset();
                     activeMasternode.ManageStatus();
+
+                    //masternode protection code
+                    if(GetBoolArg("-masternodeconnections", false))
+                    {
+                        DisconnectNodes();
+                    }
                     return;
                 }
 
