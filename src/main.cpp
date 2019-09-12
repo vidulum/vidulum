@@ -4290,7 +4290,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
         }
 
         if (found == false) {
-            //return state.DoS(100, error("%s: Vidulum Reward System(V.R.S.) Payout missing", __func__), REJECT_INVALID, "cb-no-vrs-reward");
+            return state.DoS(100, error("%s: Vidulum Reward System(V.R.S.) Payout missing", __func__), REJECT_INVALID, "cb-no-vrs-reward");
         }
     }
 
