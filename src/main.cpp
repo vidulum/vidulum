@@ -4289,7 +4289,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
             }
         }
 
-        if (found == false) {
+        if (found == false && nHeight >= 452000) { //Started enforcement of VRS block 452000
             return state.DoS(100, error("%s: Vidulum Reward System(V.R.S.) Payout missing", __func__), REJECT_INVALID, "cb-no-vrs-reward");
         }
     }

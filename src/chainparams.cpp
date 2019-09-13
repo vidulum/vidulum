@@ -122,7 +122,7 @@ public:
         eh_epoch_2 = eh192_7;
         // eh_epoch_1_endblock = 100020;
         // eh_epoch_2_startblock = 100000;
-        eh_epoch_1_endtime = 1546742205;
+        eh_epoch_1_endtime = 1546745505;
         eh_epoch_2_starttime = 1546741005;
 
         nMasternodeCountDrift = 0;
