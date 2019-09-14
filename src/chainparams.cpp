@@ -120,10 +120,10 @@ public:
         newTimeRule = 246600;
         eh_epoch_1 = eh200_9;
         eh_epoch_2 = eh192_7;
-        // eh_epoch_1_endblock = 100020;
-        // eh_epoch_2_startblock = 100000;
-        eh_epoch_1_endtime = 1546745505;
-        eh_epoch_2_starttime = 1546741005;
+        eh_epoch_1_endblock = 100020;
+        eh_epoch_2_startblock = 100000;
+        // eh_epoch_1_endtime = 1546745505;
+        // eh_epoch_2_starttime = 1546741005;
 
         nMasternodeCountDrift = 0;
 
@@ -248,10 +248,10 @@ public:
         nPruneAfterHeight = 1000;
         eh_epoch_1 = eh200_9;
         eh_epoch_2 = eh192_7;
-        eh_epoch_1_endtime = 1539727200;
-        eh_epoch_2_starttime = 1539727100;
-        // eh_epoch_1_endblock = 40;
-        // eh_epoch_2_startblock = 30;
+        // eh_epoch_1_endtime = 1539727200;
+        // eh_epoch_2_starttime = 1539727100;
+        eh_epoch_1_endblock = 10;
+        eh_epoch_2_startblock = 0;
 
 		
     	genesis = CreateGenesisBlock(
@@ -504,15 +504,15 @@ std::string CChainParams::GetVRewardSystemAddressAtIndex(int i) const {
 }
 
 
-int validEHparameterList(EHparameters *ehparams, unsigned int blocktime, const CChainParams& params){
+int validEHparameterList(EHparameters *ehparams, unsigned long blockheight, const CChainParams& params){
     //if in overlap period, there will be two valid solutions, else 1.
     //The upcoming version of EH is preferred so will always be first element
     //returns number of elements in list
-    if(blocktime>=params.eh_epoch_2_start() && blocktime>params.eh_epoch_1_end()){
+    if(blockheight>=params.eh_epoch_2_start() && blockheight>params.eh_epoch_1_end()){
         ehparams[0]=params.eh_epoch_2_params();
         return 1;
     }
-    if(blocktime<params.eh_epoch_2_start()){
+    if(blockheight<params.eh_epoch_2_start()){
         ehparams[0]=params.eh_epoch_1_params();
         return 1;
     }

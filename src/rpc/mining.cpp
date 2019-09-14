@@ -209,7 +209,7 @@ UniValue generate(const UniValue& params, bool fHelp)
 
     EHparameters ehparams[MAX_EH_PARAM_LIST_LEN]; //allocate on-stack space for parameters list
     const CChainParams& chainparams = Params();
-
+    
     while (nHeight < nHeightEnd)
     {
             validEHparameterList(ehparams,nHeight+1,chainparams);
