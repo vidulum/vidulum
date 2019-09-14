@@ -367,8 +367,8 @@ public:
         nPruneAfterHeight = 1000;
         eh_epoch_1 = eh48_5;
         eh_epoch_2 = eh48_5;
-        eh_epoch_1_endtime = 1;
-        eh_epoch_2_starttime = 1;
+        eh_epoch_1_endblock = 1;
+        eh_epoch_2_startblock = 1;
 
     	genesis = CreateGenesisBlock(
             1539727200,
