@@ -165,7 +165,7 @@ bool CheckEquihashSolution(const CBlockHeader *pblock, const CChainParams& param
         default: return error("CheckEquihashSolution: Unsupported solution size of %d", nSolSize);
     }
 
-    if(pblock->nTime <= params.eh_epoch_1_end())
+    if(pblock->nHeight <= params.eh_epoch_1_end())
     {
         n = params.eh_epoch_1_params().n;
         k = params.eh_epoch_1_params().k;
