@@ -157,27 +157,15 @@ bool CheckEquihashSolution(const CBlockHeader *pblock, const CChainParams& param
     unsigned int n,k;
     size_t nSolSize = pblock->nSolution.size();
     switch (nSolSize){
-        case 1344:
-        case 400:
-        case 100:
-        case 68:
-        case 36: break;
+        case 1344: n=200; k=9; break;
+        case 400:  n=192; k=7; break;
+        case 100:  n=144; k=5; break;
+        case 68:   n=96;  k=5; break;
+        case 36:   n=48;  k=5; break;
         default: return error("CheckEquihashSolution: Unsupported solution size of %d", nSolSize);
     }
 
-    if(pindexLast->nHeight <= params.eh_epoch_1_end())
-    {
-        n = params.eh_epoch_1_params().n;
-        k = params.eh_epoch_1_params().k;
-    }
-    else
-    {
-        n = params.eh_epoch_2_params().n;
-        k = params.eh_epoch_2_params().k;
-    }
     LogPrint("pow", "selected n,k : %d, %d \n", n,k);
-
-    //need to put block height param switching code here
 
     // Hash state
     crypto_generichash_blake2b_state state;
