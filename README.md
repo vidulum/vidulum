@@ -1,4 +1,4 @@
-Vidulum 2.0.1
+Vidulum 2.0.2
 =============
 
 What is Vidulum?
@@ -17,9 +17,6 @@ blockchain has reached a significant size.
 
 Security Warnings
 -----------------
-
-See important security warnings on the
-[Security Information page](https://vidulum.org/support/security/).
 
 **Vidulum is experimental and a work-in-progress.** Use at your own risk.
 
@@ -115,9 +112,7 @@ HOST=x86_64-w64-mingw32 ./zcutil/build.sh
 --------
 ### Need Help?
 
-* See the documentation at the [refer from Zcash Wiki](https://github.com/zcash/zcash/wiki/1.0-User-Guide)
-  for help and more information.
-* Ask for help on the [Vidulum](https://forum.vidulum.org/) forum or contact us via email support@vidulum.org
+Join our Discord: https://discord.gg/bF2P5bV
 
 Participation in the Vidulum project is subject to a
 [Code of Conduct](code_of_conduct.md).
