@@ -26,7 +26,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return nProofOfWorkLimit;
 
     // Reset the difficulty after the algo fork
-    if (pindexLast->nHeight >= chainParams.eh_epoch_1_end() - params.nPowAveragingWindow                                                                                  9
+    if (pindexLast->nHeight >= chainParams.eh_epoch_1_end() - params.nPowAveragingWindow
         && pindexLast->nHeight < chainParams.eh_epoch_1_end()) {
         LogPrint("pow", "Reset the difficulty for the eh_epoch_2 algo change: %d\n", nProofOfWorkLimit);
         return nProofOfWorkLimit;
