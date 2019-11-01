@@ -1,19 +1,16 @@
 Vidulum 2.0.2
 =============
 
-What is Vidulum?
+What is Vidulum (VDL)?
 --------------
+- One minute block time
+- 10 VDL total per block
+- 3.2 VDL for masternodes per block
+- 4.8 VDL for proof of work miners per block
+- 2.0 VDL for Vidulum Reward System V-Staking
+- 1440 Estimated blocks per day
+- Trading on STEX and CREX24
 
-Vidulum(https://vidulum.app/) is an implementation of the "Zerocash" protocol.
-Based on Bitcoin's code, it intends to offer a far higher standard of privacy
-through a sophisticated zero-knowledge proving scheme that preserves
-confidentiality of transaction metadata. Technical details are available
-in our [Protocol Specification](https://github.com/vidulum/zips/raw/master/protocol/protocol.pdf).
-
-This software is the Vidulum client. It downloads and stores the entire history
-of Vidulum transactions; depending on the speed of your computer and network
-connection, the synchronization process could take a day or more once the
-blockchain has reached a significant size.
 
 Security Warnings
 -----------------
