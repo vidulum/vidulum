@@ -11,7 +11,7 @@ matrix:
       sudo: required
       env: WINDOWS_DEPLOY="true" LINUX_DEPLOY="false" OSX_DEPLOY="false" $TRAVIS_OS_NAME="windows"
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode10.2
       env: OSX_DEPLOY="true" LINUX_DEPLOY="false" WINDOWS_DEPLOY="false" $TRAVIS_OS_NAME="osx"
 branches:
   only:
@@ -27,7 +27,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install build-essential pkg-config libcurl3-gnutls-dev libc6-dev libevent-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python zlib1g-dev wget bsdmainutils automake libssl-dev libprotobuf-dev protobuf-compiler libdb++-dev ntp ntpdate; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib curl; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then sudo apt-get install autoconf libtool ncurses-dev unzip git python zlib1g-dev wget bsdmainutils automake mingw-w64 zip; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then sudo apt-get update; fi
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then sudo apt-get install g++-4.9; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm '/usr/local/include/c++'; fi
@@ -48,68 +48,67 @@ before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git tag "$TRAVIS_BRANCH-osx-$(date +'%Y%m%d%H%M')-$(git log --format=%h -1)"; fi
 deploy:
   - provider: releases
-    api_key:
-      secure: ${GH_TOKEN}
     name: vidulum_linux-$TRAVIS_BRANCH
     prerelease: true
     file: vidulum_linux_$TRAVIS_BRANCH.tar.gz
     skip_cleanup: true
     on:
       repo: vidulum/vidulum
+      tag: ${RELEASE_VERSION}
       branch: master
       condition: $LINUX_DEPLOY = "true"
   - provider: releases
-    api_key:
-      secure: ${GH_TOKEN}
+    api_key: ${GH_TOKEN}
     name: vidulum_linux-$TRAVIS_BRANCH
     prerelease: true
     file: vidulum_linux_$TRAVIS_BRANCH.tar.gz
     skip_cleanup: true
     on:
       repo: vidulum/vidulum
+      tag: ${RELEASE_VERSION}
       branch: dev
       condition: $LINUX_DEPLOY = "true"
   - provider: releases
-    api_key:
-      secure: ${GH_TOKEN}
+    api_key: ${GH_TOKEN}
     name: vidulum_windows-$TRAVIS_BRANCH
     prerelease: true
     file: vidulum_windows_$TRAVIS_BRANCH.zip
     skip_cleanup: true
     on:
       repo: vidulum/vidulum
+      tag: ${RELEASE_VERSION}
       branch: master
       condition: $WINDOWS_DEPLOY = "true"
   - provider: releases
-    api_key:
-      secure: ${GH_TOKEN}
+    api_key: ${GH_TOKEN}
     name: vidulum_windows-$TRAVIS_BRANCH
     prerelease: true
     file: vidulum_windows_$TRAVIS_BRANCH.zip
     skip_cleanup: true
     on:
       repo: vidulum/vidulum
+      tag: ${RELEASE_VERSION}
       branch: dev
       condition: $WINDOWS_DEPLOY = "true"
   - provider: releases
-    api_key:
-      secure: ${GH_TOKEN}
+    api_key: ${GH_TOKEN}
     name: vidulum_osx-$TRAVIS_BRANCH
     prerelease: true
     file: vidulum_osx_$TRAVIS_BRANCH.tar.gz
     skip_cleanup: true
     on:
       repo: vidulum/vidulum
+      tag: ${RELEASE_VERSION}
       branch: master
       condition: $OSX_DEPLOY = "true"
   - provider: releases
-    api_key:
-      secure: ${GH_TOKEN}
+    api_key: ${GH_TOKEN}
     name: vidulum_osx-$TRAVIS_BRANCH
     prerelease: true
     file: vidulum_osx_$TRAVIS_BRANCH.tar.gz
     skip_cleanup: true
     on:
       repo: vidulum/vidulum
+      tag: ${RELEASE_VERSION}
       branch: dev
       condition: $OSX_DEPLOY = "true"
