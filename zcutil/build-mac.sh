@@ -1,6 +1,6 @@
 #!/bin/bash
-export CC=clang
-export CXX=clang++
+export CC=gcc-8
+export CXX=g++-8
 export LIBTOOL=libtool
 export AR=ar
 export RANLIB=ranlib
@@ -14,12 +14,14 @@ if [ "x$*" = 'x--help' ]
 then
     cat <<EOF
 Usage:
+
 $0 --help
   Show this help message and exit.
+
 $0 [ --enable-lcov ] [ MAKEARGS... ]
-  Build Zen and most of its transitive dependencies from
-  source. MAKEARGS are applied to both dependencies and Zen itself. If
-  --enable-lcov is passed, Zen is configured to add coverage
+  Build Vidulum and most of its transitive dependencies from
+  source. MAKEARGS are applied to both dependencies and Vidulum itself. If
+  --enable-lcov is passed, Vidulum is configured to add coverage
   instrumentation, thus enabling "make cov" to work.
 EOF
     exit 0
@@ -35,39 +37,22 @@ then
     shift
 fi
 
-# If --disable-mining is the next argument, disable mining code:
-MINING_ARG=''
-if [ "x${1:-}" = 'x--disable-mining' ]
-then
-    MINING_ARG='--enable-mining=no'
-    shift
-fi
+TRIPLET=`./depends/config.guess`
+PREFIX="$(pwd)/depends/$TRIPLET"
 
-# If --disable-rust is the next argument, disable Rust code:
-RUST_ARG=''
-if [ "x${1:-}" = 'x--disable-rust' ]
-then
-    RUST_ARG='--enable-rust=no'
-    shift
-fi
+make "$@" -C ./depends/ V=1 NO_QT=1 NO_PROTON=1
 
+#BUILD CCLIB
 
-# If --enable-proton is the next argument, enable building Proton code:
-PROTON_ARG='--enable-proton=no'
-if [ "x${1:-}" = 'x--enable-proton' ]
-then
-    PROTON_ARG=''
-    shift
-fi
-
-TRIPLET="./depends/config.guess"
-PREFIX="$(pwd)/depends/x86_64-apple-darwin17.7.0"
-
-NO_RUST="$RUST_ARG" NO_PROTON="$PROTON_ARG" make "$@" -C ./depends/ V=1 NO_QT=1
+WD=$PWD
+cd src/cc
+echo $PWD
+./makecustom
+cd $WD
 
 ./autogen.sh
-CPPFLAGS="-I$PREFIX/include -arch x86_64" LDFLAGS="-L$PREFIX/lib -arch x86_64 -Wl,-no_pie -lc++" \
-CXXFLAGS="-arch x86_64 -I/usr/local/Cellar/gcc5/5.4.0/include/c++/5.4.0 -I$PREFIX/include -fwrapv -fno-strict-aliasing -Werror -g" \
-./configure --prefix="$PREFIX" --with-gui=no "$HARDENING_ARG" "$LCOV_ARG" "$RUST_ARG" "$MINING_ARG" "$PROTON_ARG"
+CPPFLAGS="-I$PREFIX/include -arch x86_64" LDFLAGS="-L$PREFIX/lib -arch x86_64 -Wl,-no_pie" \
+CXXFLAGS='-arch x86_64 -I/usr/local/Cellar/gcc\@8/8.3.0/include/c++/8.3.0/ -I$PREFIX/include -fwrapv -fno-strict-aliasing -Wno-builtin-declaration-mismatch -Werror -g -Wl,-undefined -Wl,dynamic_lookup' \
+./configure --prefix="${PREFIX}" --with-gui=no "$HARDENING_ARG" "$LCOV_ARG"
 
-make "$@" V=1
+make "$@" V=1 NO_GTEST=1 STATIC=1
