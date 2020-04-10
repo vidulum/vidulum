@@ -4225,6 +4225,12 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         return state.Invalid(error("%s: block's timestamp is too early", __func__),
                              REJECT_INVALID, "time-too-old");
 
+    // Check timestamp against prev for selfish mining efforts
+    if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight) &&
+        block.GetBlockTime() <= pindexPrev->nTime + (consensusParams.nPowTargetSpacing / 2))
+        return state.Invalid(error("%s: Ah Ah Ah - no more selfish mining", __func__),
+                             REJECT_INVALID, "time-too-new");
+
     if (fCheckpointsEnabled)
     {
         // Don't accept any forks from the main chain prior to last checkpoint
