@@ -543,16 +543,16 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     CAmount requiredMasternodePayment = GetMasternodePayment(nBlockHeight, nReward, nMasternode_Drift_Count);
 	
-	// //require at least 6 signatures
-	// BOOST_FOREACH (CMasternodePayee& payee, vecPayments)
-    // {
-    //     LogPrint("masternode","Masternode payment nVotes=%d nMaxSignatures=%d\n", payee.nVotes, nMaxSignatures);
-	// 	if (payee.nVotes >= nMaxSignatures && payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED)
-	// 		nMaxSignatures = payee.nVotes;
-    // }
+	//require at least 6 signatures
+	BOOST_FOREACH (CMasternodePayee& payee, vecPayments)
+    {
+        LogPrint("masternode","Masternode payment nVotes=%d nMaxSignatures=%d\n", payee.nVotes, nMaxSignatures);
+		if (payee.nVotes >= nMaxSignatures && payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED)
+			nMaxSignatures = payee.nVotes;
+    }
 
-	// //if we don't have at least 6 signatures on a payee, approve whichever is the longest chain
-	// if (nMaxSignatures < MNPAYMENTS_SIGNATURES_REQUIRED) return true;			
+	//if we don't have at least 6 signatures on a payee, approve whichever is the longest chain
+	if (nMaxSignatures < MNPAYMENTS_SIGNATURES_REQUIRED) return true;
 
     BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
         bool found = false;
