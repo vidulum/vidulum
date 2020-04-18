@@ -106,7 +106,7 @@ public:
 
         consensus.nZawyLWMA3AveragingWindow = 60;
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000946c3a4a80d");
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000957c7ed0f6a");
         
         /**
          * The message start string should be awesome! Ⓢ❤
@@ -175,7 +175,7 @@ public:
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
             (0, consensus.hashGenesisBlock)
-            (395555, uint256S("0x0035505c0e14edf996f954e8fe11a048edb62bcf98c5bd55cc6a8d79d589bb")),
+            (395555, uint256S("0x0035505c0e14edf996f954e8fe11a048edb62bcf98c5bd55cc6a8d79d589bb"))
             (695555, uint256S("0x0000014cac14299e3750264fc6e0fb4036f7f10d784be26bef8f4209e49265b2")),
             1583252758,  // * UNIX timestamp of last checkpoint block
             1279128,     // * total number of transactions between genesis and last checkpoint

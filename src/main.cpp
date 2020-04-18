@@ -4227,7 +4227,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
     // Check timestamp against prev for selfish mining efforts
     if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight) &&
-        block.GetBlockTime() <= pindexPrev->nTime + (consensusParams.nPowTargetSpacing / 2))
+        block.GetBlockTime() <= pindexPrev->nTime + (consensusParams.nPowTargetSpacing / 3))
         return state.Invalid(error("%s: Ah Ah Ah - no more selfish mining", __func__),
                              REJECT_INVALID, "time-too-new");
 
