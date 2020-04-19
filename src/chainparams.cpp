@@ -236,7 +236,7 @@ public:
         consensus.vUpgrades[Consensus::UPGRADE_DIFA].nProtocolVersion = 170008;
         consensus.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight = 210;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170010;
-        consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight = 1200;
+        consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight = 1210;
 
         consensus.nMasternodePaymentsStartBlock = 105;
         // consensus.nMasternodePaymentsIncreasePeriod = 200;
