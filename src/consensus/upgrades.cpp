@@ -33,8 +33,12 @@ const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
         /*.nBranchId =*/ 0,
         /*.strName =*/ "Difa",
         /*.strInfo =*/ "Vidulum Blocksize and LWMA update",
-    }
-};
+    },
+    {
+        /*.nBranchId =*/0x76b809bb,
+        /*.strName =*/"Dennis",
+        /*.strInfo =*/"See https://github.com/vidulum/Upgrades/blob/master/Dennis.md for details",
+    }};
 
 const uint32_t SPROUT_BRANCH_ID = NetworkUpgradeInfo[Consensus::BASE_SPROUT].nBranchId;
 
