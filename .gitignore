@@ -78,6 +78,7 @@ src/univalue/gen
 
 # Compilation
 Makefile
+src/Makefile
 
 # Unit-tests
 Makefile.test
