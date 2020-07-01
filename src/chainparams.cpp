@@ -103,6 +103,8 @@ public:
         consensus.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight = 430000;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170010;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight = 780000;
+        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nProtocolVersion = 170011;
+        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight = 9999999;
 
         consensus.nZawyLWMA3AveragingWindow = 60;
         // The best chain should have at least this much work.
@@ -237,6 +239,8 @@ public:
         consensus.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight = 210;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170010;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight = 1210;
+        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nProtocolVersion = 170011;
+        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight = 2500;
 
         consensus.nMasternodePaymentsStartBlock = 105;
         // consensus.nMasternodePaymentsIncreasePeriod = 200;
@@ -361,6 +365,9 @@ public:
         consensus.vUpgrades[Consensus::UPGRADE_SAPLING].nActivationHeight =
             Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170010;
+        consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight =
+            Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
+        consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170011;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight =
             Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
 

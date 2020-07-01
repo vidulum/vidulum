@@ -30,6 +30,7 @@ enum UpgradeIndex {
     UPGRADE_SAPLING,
     UPGRADE_DIFA,
     UPGRADE_DENNIS,
+    UPGRADE_ALPHA,
     // NOTE: Also add new upgrades to NetworkUpgradeInfo in upgrades.cpp
     MAX_NETWORK_UPGRADES
 };
