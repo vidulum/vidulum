@@ -4341,8 +4341,8 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
     }
 
     // Check if the current block is being submit within [nPowTargetSpacing] seconds of [nSelfishMiningDepth] blocks
-    int nHeight = block->nHeight;
-    CBlockIndex* pindexPastBlock = block->GetAncestor(nHeight - consensusParams.nSelfishMiningDepth);
+    int nHeight = pindexPrev->nHeight+1;
+    CBlockIndex* pindexPastBlock = pindexPrev->GetAncestor(nHeight - consensusParams.nSelfishMiningDepth);
     if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight) && 
         block.GetBlockTime() <= pindexPastBlock->nTime + consensusParams.nPowTargetSpacing) {
 
