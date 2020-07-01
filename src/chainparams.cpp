@@ -88,6 +88,7 @@ public:
         consensus.nPowMaxAdjustDown = 32; // 32% adjustment down
         consensus.nPowMaxAdjustUp = 16; // 16% adjustment up
         consensus.nPowTargetSpacing = 1 * 60; // 1 min
+        consensus.nSelfishMiningDepth = 5; // how many blocks back to check for selfish mining
         consensus.nPowAllowMinDifficultyBlocksAfterHeight = boost::none;
         consensus.vUpgrades[Consensus::BASE_SPROUT].nProtocolVersion = 170007;
         consensus.vUpgrades[Consensus::BASE_SPROUT].nActivationHeight =
@@ -224,6 +225,7 @@ public:
         consensus.nPowMaxAdjustDown = 32; // 32% adjustment down
         consensus.nPowMaxAdjustUp = 16; // 16% adjustment up
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nSelfishMiningDepth = 5; // how many blocks back to check for selfish mining
         consensus.nPowAllowMinDifficultyBlocksAfterHeight = 13000;
         consensus.vUpgrades[Consensus::BASE_SPROUT].nProtocolVersion = 170006;
         consensus.vUpgrades[Consensus::BASE_SPROUT].nActivationHeight =
@@ -240,7 +242,7 @@ public:
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170010;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight = 1210;
         consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nProtocolVersion = 170011;
-        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight = 2500;
+        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight = 6600;
 
         consensus.nMasternodePaymentsStartBlock = 105;
         // consensus.nMasternodePaymentsIncreasePeriod = 200;
@@ -351,6 +353,7 @@ public:
         consensus.nPowMaxAdjustDown = 0; // Turn off adjustment down
         consensus.nPowMaxAdjustUp = 0; // Turn off adjustment up
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nSelfishMiningDepth = 5; // how many blocks back to check for selfish mining
         consensus.nPowAllowMinDifficultyBlocksAfterHeight = 0;
         consensus.vUpgrades[Consensus::BASE_SPROUT].nProtocolVersion = 170002;
         consensus.vUpgrades[Consensus::BASE_SPROUT].nActivationHeight =

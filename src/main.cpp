@@ -4340,9 +4340,11 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
             return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
     }
 
-    int nHeight = pindexPrev->nHeight+1;
+    // Check if the current block is being submit within [nPowTargetSpacing] seconds of [nSelfishMiningDepth] blocks
+    int nHeight = block->nHeight;
+    CBlockIndex* pindexPastBlock = block->GetAncestor(nHeight - consensusParams.nSelfishMiningDepth);
     if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight) && 
-        block.GetBlockTime() <= pindexPrev->nTime + (consensusParams.nPowTargetSpacing / 12)) {
+        block.GetBlockTime() <= pindexPastBlock->nTime + consensusParams.nPowTargetSpacing) {
 
         return state.Invalid(error("%s: Ah Ah Ah - no more selfish mining", __func__),
                             REJECT_INVALID, "time-too-new");

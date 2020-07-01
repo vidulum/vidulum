@@ -108,6 +108,7 @@ struct Params {
     int64_t nPowMaxAdjustDown;
     int64_t nPowMaxAdjustUp;
     int64_t nPowTargetSpacing;
+    int64_t nSelfishMiningDepth; // how many blocks back to check for selfish mining
     int nMasternodePaymentsStartBlock;
     int nMasternodePaymentsIncreasePeriod; // in blocks
     int64_t AveragingWindowTimespan() const { return nPowAveragingWindow * nPowTargetSpacing; }
