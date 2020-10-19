@@ -39,6 +39,13 @@ $ sudo apt-get install \
       zlib1g-dev wget bsdmainutils automake curl
 ```
 
+NOTE: Ubuntu 20.04 requires
+
+```
+$ sudo apt-get install python3-zmq
+```
+
+
 On Fedora-based systems:
 
 ```
