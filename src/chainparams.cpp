@@ -179,8 +179,8 @@ public:
             boost::assign::map_list_of
             (0, consensus.hashGenesisBlock)
             (395555, uint256S("0x0035505c0e14edf996f954e8fe11a048edb62bcf98c5bd55cc6a8d79d589bb"))
-            (695555, uint256S("0x0000014cac14299e3750264fc6e0fb4036f7f10d784be26bef8f4209e49265b2")),
-            (695555, uint256S("0x00002271d5a9c0394fafd8ca17484d8f81a6e8bb2ea4fbbbb2dc753fb7780b01")),
+            (695555, uint256S("0x0000014cac14299e3750264fc6e0fb4036f7f10d784be26bef8f4209e49265b2"))
+            (1260000, uint256S("0x00002271d5a9c0394fafd8ca17484d8f81a6e8bb2ea4fbbbb2dc753fb7780b01")),
             1617292606,  // * UNIX timestamp of last checkpoint block
             2168671,     // * total number of transactions between genesis and last checkpoint
                          //   (the tx=... number in the SetBestChain debug.log lines)
