@@ -4226,7 +4226,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
                              REJECT_INVALID, "time-too-old");
 
     // Check timestamp against prev for selfish mining efforts
-    if (nHeight < (consensusParams.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight)){
+    if (nHeight < (consensusParams.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight)){
         if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight) &&
         block.GetBlockTime() <= pindexPrev->nTime + (consensusParams.nPowTargetSpacing / 3))
         return state.Invalid(error("%s: Ah Ah Ah - no more selfish mining", __func__),
@@ -4343,7 +4343,7 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
     // Check if the current block is being submit within [nPowTargetSpacing] seconds of [nSelfishMiningDepth] blocks
     int nHeight = pindexPrev->nHeight+1;
     CBlockIndex* pindexPastBlock = pindexPrev->GetAncestor(nHeight - consensusParams.nSelfishMiningDepth);
-    if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight) && 
+    if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight) && 
         block.GetBlockTime() <= pindexPastBlock->nTime + consensusParams.nPowTargetSpacing) {
 
         return state.Invalid(error("%s: Ah Ah Ah - no more selfish mining", __func__),

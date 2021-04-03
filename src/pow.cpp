@@ -28,7 +28,7 @@ unsigned int static LDAv1NextWorkRequired(const CBlockIndex* pindexLast, const C
 
     //  TODO: SET THIS TO A DEFAULT DIFF FOR THE nLiquidDepth BLOCK WINDOW
     // reset diff over first nLiquidDepth blocks after LDA activation
-    if (height < (params.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight + nLiquidDepth)) {
+    if (height < (params.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight + nLiquidDepth)) {
        //  TODO: MIGHT MOVE THIS TO CHAINPARAMS
        // Should be about 105 diff
        const arith_uint256 bnLiquidPowLimit = UintToArith256(uint256S("001325b61d49f49f49f49f49f49f49f49f49f49f49f49f49f49f49f49f49f49d"));
@@ -153,7 +153,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     int nHeight = pindexLast->nHeight + 1;
     if (nHeight < params.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight) {
         return DigishieldCalculateNextWorkRequired(bnAvg, pindexLast->GetMedianTimePast(), pindexFirst->GetMedianTimePast(), params);
-    } else if(nHeight < params.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight) {
+    } else if(nHeight < params.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight) {
         return Lwma3CalculateNextWorkRequired(pindexLast, params);
     } else {
         return LDAv1NextWorkRequired(pindexLast, pblock, params);

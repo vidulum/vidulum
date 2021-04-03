@@ -104,12 +104,12 @@ public:
         consensus.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight = 430000;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170010;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight = 780000;
-        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nProtocolVersion = 170011;
-        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight = 1290000;
+        consensus.vUpgrades[Consensus::UPGRADE_LIQUID].nProtocolVersion = 170011;
+        consensus.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight = 1290000;
 
         consensus.nZawyLWMA3AveragingWindow = 60;
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000957c7ed0f6a");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000097bf7cced53");
         
         /**
          * The message start string should be awesome! Ⓢ❤
@@ -180,10 +180,11 @@ public:
             (0, consensus.hashGenesisBlock)
             (395555, uint256S("0x0035505c0e14edf996f954e8fe11a048edb62bcf98c5bd55cc6a8d79d589bb"))
             (695555, uint256S("0x0000014cac14299e3750264fc6e0fb4036f7f10d784be26bef8f4209e49265b2")),
-            1583252758,  // * UNIX timestamp of last checkpoint block
-            1279128,     // * total number of transactions between genesis and last checkpoint
+            (695555, uint256S("0x00002271d5a9c0394fafd8ca17484d8f81a6e8bb2ea4fbbbb2dc753fb7780b01")),
+            1617292606,  // * UNIX timestamp of last checkpoint block
+            2168671,     // * total number of transactions between genesis and last checkpoint
                          //   (the tx=... number in the SetBestChain debug.log lines)
-            1059         //   total number of tx / (checkpoint block height / (24 * 24))
+            991          //   total number of tx / (checkpoint block height / (24 * 24))
         };
 
         // Vidulum Rewards System script expects a vector of 2-of-3 multisig addresses
@@ -241,8 +242,8 @@ public:
         consensus.vUpgrades[Consensus::UPGRADE_DIFA].nActivationHeight = 210;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nProtocolVersion = 170010;
         consensus.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight = 1210;
-        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nProtocolVersion = 170011;
-        consensus.vUpgrades[Consensus::UPGRADE_ALPHA].nActivationHeight = 6600;
+        consensus.vUpgrades[Consensus::UPGRADE_LIQUID].nProtocolVersion = 170011;
+        consensus.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight = 6600;
 
         consensus.nMasternodePaymentsStartBlock = 105;
         // consensus.nMasternodePaymentsIncreasePeriod = 200;
