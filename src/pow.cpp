@@ -19,7 +19,7 @@
 
 unsigned int static LDAv1NextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params) {
     /* Vidulum - Liquid Difficulty Algorithm (LDAv1), written by Corey Miller - coreym@vidulum.org */
-    LogPrint("pow", "Liquid Difficulty Algo\n");
+    // LogPrint("pow", "Liquid Difficulty Algo\n");
 
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
     const int64_t height = pindexLast->nHeight;
@@ -54,16 +54,16 @@ unsigned int static LDAv1NextWorkRequired(const CBlockIndex* pindexLast, const C
 
         if(nTimeDepth >= 1){
             int64_t nTimeDelta = nFirstDelta - pindex->GetBlockTime();
-            LogPrint("pow", "Diff: %f   Height: %d   tDelta: %d \n", GetDifficulty(pindex), pindex->nHeight, nTimeDelta);
+            // LogPrint("pow", "Diff: %f   Height: %d   tDelta: %d \n", GetDifficulty(pindex), pindex->nHeight, nTimeDelta);
 
             // We care about actual and target time but let's not care too much
             if (nTimeDelta <= params.nPowTargetSpacing/10){
                 nTimeDelta = params.nPowTargetSpacing/10;
-                LogPrint("pow", "very low nTimeDelta override to: %d \n", nTimeDelta);
+                // LogPrint("pow", "very low nTimeDelta override to: %d \n", nTimeDelta);
             }
             if (nTimeDelta >= params.nPowTargetSpacing*10){
                 nTimeDelta = params.nPowTargetSpacing*10;
-                LogPrint("pow", "very high nTimeDelta override to: %d \n", nTimeDelta);
+                // LogPrint("pow", "very high nTimeDelta override to: %d \n", nTimeDelta);
             }
 
             // Add weight to more important time deltas
@@ -75,28 +75,29 @@ unsigned int static LDAv1NextWorkRequired(const CBlockIndex* pindexLast, const C
     bnTargetTotal = bnTargetTotal / (nLiquidDepth * 2);
     arith_uint256 bnPrevTargetAvg = bnTargetTotal * 2;
 
-    LogPrint("pow", "nTargetTimespan: %d \n", nTargetTimespan);
-    LogPrint("pow", "nWeightedTimespan: %d \n", nWeightedTimespan);
+    // LogPrint("pow", "nTargetTimespan: %d \n", nTargetTimespan);
+    // LogPrint("pow", "nWeightedTimespan: %d \n", nWeightedTimespan);
     double nRetargetFactor = (nWeightedTimespan / double(nTargetTimespan) * 100);
-    LogPrint("pow", "nRetargetFactor: %d \n", nRetargetFactor);
+    // LogPrint("pow", "nRetargetFactor: %d \n", nRetargetFactor);
 
     arith_uint256 bnLastTarget = arith_uint256().SetCompact(pindexLast->nBits);
     arith_uint256 bnNextDiff = bnLastTarget;
     if (nRetargetFactor >= 150) {
-        LogPrint("pow", "nRetargetFactor > 150 override to: 150 of prev target\n");
+        // LogPrint("pow", "nRetargetFactor > 150 override to: 150 of prev target\n");
         bnNextDiff = (bnLastTarget * 150) / 100;
     } else if (nRetargetFactor <= 67) {
-        LogPrint("pow", "nRetargetFactor < 67 override to: 67 of prev target\n");
+        // LogPrint("pow", "nRetargetFactor < 67 override to: 67 of prev target\n");
         bnNextDiff = (bnLastTarget * 67) / 100;
     } else if (nRetargetFactor < 83 || nRetargetFactor > 120) {
-        LogPrint("pow", "nRetargetFactor < 83 or > 120 adjust by bnPrevTargetAvg\n");
+        // LogPrint("pow", "nRetargetFactor < 83 or > 120 adjust by bnPrevTargetAvg\n");
         bnNextDiff = (bnPrevTargetAvg * nRetargetFactor) / 100;
-    }else{
-        LogPrint("pow", "Timing looks great - use last target \n");
     }
+    // else{
+        // LogPrint("pow", "Timing looks great - use last target \n");
+    // }
 
     if (bnNextDiff > bnPowLimit) {
-        LogPrint("pow", "bnNextDiff more than bnPowLimit - Resetting \n");
+        // LogPrint("pow", "bnNextDiff more than bnPowLimit - Resetting \n");
         bnNextDiff = bnPowLimit;
     }
 
