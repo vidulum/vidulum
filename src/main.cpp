@@ -4226,10 +4226,13 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
                              REJECT_INVALID, "time-too-old");
 
     // Check timestamp against prev for selfish mining efforts
-    if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight) &&
+    if (nHeight < (consensusParams.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight)){
+        if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_DENNIS].nActivationHeight) &&
         block.GetBlockTime() <= pindexPrev->nTime + (consensusParams.nPowTargetSpacing / 3))
         return state.Invalid(error("%s: Ah Ah Ah - no more selfish mining", __func__),
                              REJECT_INVALID, "time-too-new");
+    }
+    
 
     if (fCheckpointsEnabled)
     {
@@ -4306,6 +4309,8 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBlockIndex** ppindex)
 {
     const CChainParams& chainparams = Params();
+    const Consensus::Params& consensusParams = Params().GetConsensus();
+
     AssertLockHeld(cs_main);
     // Check for duplicate
     uint256 hash = block.GetHash();
@@ -4333,6 +4338,16 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
             return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
+    }
+
+    // Check if the current block is being submit within [nPowTargetSpacing] seconds of [nSelfishMiningDepth] blocks
+    int nHeight = pindexPrev->nHeight+1;
+    CBlockIndex* pindexPastBlock = pindexPrev->GetAncestor(nHeight - consensusParams.nSelfishMiningDepth);
+    if (nHeight >= (consensusParams.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight) && 
+        block.GetBlockTime() <= pindexPastBlock->nTime + consensusParams.nPowTargetSpacing) {
+
+        return state.Invalid(error("%s: Ah Ah Ah - no more selfish mining", __func__),
+                            REJECT_INVALID, "time-too-new");
     }
 
     if (!ContextualCheckBlockHeader(block, state, pindexPrev))

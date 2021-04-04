@@ -30,6 +30,7 @@ enum UpgradeIndex {
     UPGRADE_SAPLING,
     UPGRADE_DIFA,
     UPGRADE_DENNIS,
+    UPGRADE_LIQUID,
     // NOTE: Also add new upgrades to NetworkUpgradeInfo in upgrades.cpp
     MAX_NETWORK_UPGRADES
 };
@@ -107,6 +108,7 @@ struct Params {
     int64_t nPowMaxAdjustDown;
     int64_t nPowMaxAdjustUp;
     int64_t nPowTargetSpacing;
+    int64_t nSelfishMiningDepth; // how many blocks back to check for selfish mining
     int nMasternodePaymentsStartBlock;
     int nMasternodePaymentsIncreasePeriod; // in blocks
     int64_t AveragingWindowTimespan() const { return nPowAveragingWindow * nPowTargetSpacing; }

@@ -38,6 +38,11 @@ const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
         /*.nBranchId =*/0x76b809bb,
         /*.strName =*/"Dennis",
         /*.strInfo =*/"See https://github.com/vidulum/Upgrades/blob/master/Dennis.md for details",
+    },
+    {
+        /*.nBranchId =*/0x76b809bb,
+        /*.strName =*/"Liquid",
+        /*.strInfo =*/"See https://github.com/vidulum/Upgrades/blob/master/Liquid.md for details",
     }};
 
 const uint32_t SPROUT_BRANCH_ID = NetworkUpgradeInfo[Consensus::BASE_SPROUT].nBranchId;
