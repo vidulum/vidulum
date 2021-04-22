@@ -1,4 +1,4 @@
-# Vidulum 2.2.0
+# Vidulum 2.2.1
 
 ## What is Vidulum (VDL)?
 

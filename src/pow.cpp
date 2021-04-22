@@ -31,7 +31,7 @@ unsigned int static LDAv1NextWorkRequired(const CBlockIndex* pindexLast, const C
     if (height < (params.vUpgrades[Consensus::UPGRADE_LIQUID].nActivationHeight + nLiquidDepth)) {
        //  TODO: MIGHT MOVE THIS TO CHAINPARAMS
        // Should be about 105 diff
-       const arith_uint256 bnLiquidPowLimit = UintToArith256(uint256S("001325b61d49f49f49f49f49f49f49f49f49f49f49f49f49f49f49f49f49f49d"));
+       const arith_uint256 bnLiquidPowLimit = UintToArith256(uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
        return bnLiquidPowLimit.GetCompact();
     }
 
