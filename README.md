@@ -1,3 +1,5 @@
+# DEPRECATED LEGACY CHAIN
+
 # Vidulum 2.2.1
 
 ## What is Vidulum (VDL)?
